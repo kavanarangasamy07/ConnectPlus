@@ -1,0 +1,31 @@
+{
+  "name": "ConnectPlus: Communication Without Barriers",
+  "short_name": "ConnectPlus",
+  "description": "AI-powered accessibility platform for deaf, hard-of-hearing, mute, and speech-impaired individuals.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0B1220",
+  "theme_color": "#1E6FD9",
+  "categories": ["accessibility", "utilities", "communication"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}

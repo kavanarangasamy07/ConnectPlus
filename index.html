@@ -1,0 +1,1002 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConnectPlus | Communication Without Barriers</title>
+
+<style>
+:root {
+    --blue: #1677e8;
+    --cyan: #12b8b2;
+    --navy: #07152f;
+    --background: #f3f7fc;
+    --card: white;
+    --text: #14233d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--background);
+    color: var(--text);
+}
+
+button, input, textarea, select {
+    font: inherit;
+}
+
+button {
+    background: linear-gradient(110deg, var(--blue), #0b9bd4);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 3px solid #65b9ff;
+}
+
+header {
+    background: linear-gradient(125deg, #06132c, #0b2c57, #087e91);
+    color: white;
+    padding: 20px 5% 65px;
+}
+
+.navbar {
+    max-width: 1180px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.brand img {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.hero {
+    max-width: 1180px;
+    margin: 50px auto 0;
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    align-items: center;
+    gap: 35px;
+}
+
+.hero h1 {
+    font-size: clamp(35px, 5vw, 60px);
+    line-height: 1.1;
+}
+
+.hero p {
+    font-size: 18px;
+    color: #d4e5f7;
+    line-height: 1.7;
+}
+
+.hero-logo {
+    text-align: center;
+}
+
+.hero-logo img {
+    width: min(100%, 300px);
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+main {
+    max-width: 1180px;
+    margin: -25px auto 60px;
+    padding: 0 20px;
+}
+
+h2 {
+    color: #12315a;
+    margin-top: 40px;
+}
+
+.section-heading {
+    margin: 40px 0 18px;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.card {
+    background: var(--card);
+    padding: 23px;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px #17365d12;
+    border: 1px solid #e3eaf4;
+    margin-bottom: 18px;
+}
+
+.feature-card h3 {
+    color: #145bb2;
+}
+
+.feature-card p {
+    color: #64748b;
+    min-height: 45px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 13px;
+    margin: 8px 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: white;
+    color: #14233d;
+}
+
+textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.result {
+    background: #f4f8fd;
+    border: 1px dashed #c5d5e8;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 12px;
+    min-height: 45px;
+    overflow-wrap: anywhere;
+}
+
+.board {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.board button {
+    flex: 1 1 140px;
+    background: #eaf3ff;
+    color: #145bb2;
+    box-shadow: none;
+    border: 1px solid #d6e8ff;
+}
+
+.alert {
+    display: none;
+    background: #fff4d7;
+    border: 2px solid #f3c65e;
+    padding: 18px;
+    border-radius: 12px;
+    color: #714b00;
+    margin: 20px 0;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.alert.show {
+    display: flex;
+}
+
+.danger {
+    background: #dc3545;
+}
+
+.secondary {
+    background: #eaf3ff;
+    color: #145bb2;
+    box-shadow: none;
+}
+
+footer {
+    background: #07152f;
+    color: white;
+    padding: 25px;
+    text-align: center;
+}
+
+/* Dark mode */
+
+body.dark {
+    --background: #081426;
+    --card: #10213a;
+    --text: #e6eef9;
+}
+
+body.dark h2 {
+    color: #e6eef9;
+}
+
+body.dark .card {
+    border-color: #263d5c;
+}
+
+body.dark input,
+body.dark textarea,
+body.dark select {
+    background: #0b1a30;
+    color: white;
+    border-color: #38516f;
+}
+
+body.dark .result {
+    background: #0b1a30;
+    color: white;
+}
+
+body.dark .board button {
+    background: #17375c;
+    color: white;
+}
+
+@media(max-width: 800px) {
+    .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .hero-logo img {
+        width: 200px;
+    }
+
+    .feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .navbar {
+        justify-content: center;
+    }
+}
+
+@media(max-width: 580px) {
+    .feature-grid,
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .navbar {
+        flex-direction: column;
+    }
+
+    nav {
+        justify-content: center;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="navbar">
+
+        <div class="brand">
+            <!-- Replace logo.jpg with your logo image filename -->
+            <img src="logo.jpg" alt="ConnectPlus Logo">
+            ConnectPlus
+        </div>
+
+        <nav>
+            <a href="#features">Features</a>
+            <a href="#communication">Communication</a>
+            <a href="#board">Board</a>
+            <a href="#translation">Translation</a>
+            <a href="#sos">SOS</a>
+
+            <button class="secondary" onclick="toggleTheme()">
+                🌙 Theme
+            </button>
+        </nav>
+
+    </div>
+
+    <section class="hero">
+
+        <div>
+            <h1>Communication<br>Without Barriers.</h1>
+
+            <p>
+                An AI-powered accessibility platform
+                designed to make communication easier
+                for everyone.
+            </p>
+
+            <button onclick="go('features')">
+                Explore Features ↓
+            </button>
+
+            <button class="secondary"
+                    onclick="go('board')">
+                Open Communication Board
+            </button>
+        </div>
+
+        <div class="hero-logo">
+            <img src="logo.jpg" alt="ConnectPlus">
+        </div>
+
+    </section>
+
+</header>
+
+<main>
+
+    <div class="alert" id="visualAlert" role="alert">
+        <strong>🔔 You have a new notification!</strong>
+
+        <button onclick="closeNotification()">
+            Dismiss
+        </button>
+    </div>
+
+    <!-- FEATURES -->
+
+    <section id="features">
+
+        <div class="section-heading">
+            <h2>Explore ConnectPlus</h2>
+            <p>Choose a feature to get started.</p>
+        </div>
+
+        <div class="feature-grid">
+
+            <div class="card feature-card">
+                <h3>🗣️ Two-Way Communication</h3>
+                <p>Convert speech into text and text into voice.</p>
+                <button onclick="go('communication')">Open</button>
+            </div>
+
+            <div class="card feature-card">
+                <h3>📝 Communication Board</h3>
+                <p>Speak using ready-made messages.</p>
+                <button onclick="go('board')">Open</button>
+            </div>
+
+            <div class="card feature-card">
+                <h3>💬 Live Conversation</h3>
+                <p>Display spoken conversations as text.</p>
+                <button onclick="go('live')">Open</button>
+            </div>
+
+            <div class="card feature-card">
+                <h3>🌐 Translation</h3>
+                <p>Translate messages into different languages.</p>
+                <button onclick="go('translation')">Open</button>
+            </div>
+
+            <div class="card feature-card">
+                <h3>🔔 Visual Notifications</h3>
+                <p>Display visual alerts on the screen.</p>
+                <button onclick="showNotification()">Open</button>
+            </div>
+
+            <div class="card feature-card">
+                <h3>🆘 Emergency SOS</h3>
+                <p>Prepare emergency messages for trusted contacts.</p>
+                <button onclick="go('sos')">Open</button>
+            </div>
+
+            <div class="card feature-card">
+                <h3>🤖 AI Personal Assistant</h3>
+                <p>Ask questions about using ConnectPlus.</p>
+                <button onclick="go('assistant')">Open</button>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- COMMUNICATION -->
+
+    <section id="communication">
+
+        <h2>🗣️ Two-Way Communication</h2>
+
+        <div class="grid">
+
+            <div class="card">
+
+                <h3>🎤 Speech to Text</h3>
+
+                <button onclick="startListening('speechResult')">
+                    Start Speaking
+                </button>
+
+                <button class="secondary" onclick="stopListening()">
+                    Stop
+                </button>
+
+                <p id="speechStatus">Microphone is idle.</p>
+
+                <div class="result" id="speechResult" aria-live="polite">
+                    Your speech will appear here.
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <h3>🔊 Text to Speech</h3>
+
+                <textarea id="message"
+                    placeholder="Type your message here..."></textarea>
+
+                <button onclick="speakText(
+                    document.getElementById('message').value)">
+                    Speak Message
+                </button>
+
+                <button class="secondary"
+                        onclick="speechSynthesis.cancel()">
+                    Stop Voice
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- COMMUNICATION BOARD -->
+
+    <section id="board">
+
+        <h2>📝 Communication Board</h2>
+
+        <div class="card">
+
+            <p>Click a message to speak it aloud.</p>
+
+            <div class="board" id="boardButtons"></div>
+
+            <p id="boardStatus" aria-live="polite">
+                Choose a message.
+            </p>
+
+        </div>
+
+    </section>
+
+    <!-- LIVE CONVERSATION -->
+
+    <section id="live">
+
+        <h2>💬 Live Conversation Assistant</h2>
+
+        <div class="card">
+
+            <button onclick="startListening('liveResult')">
+                🎤 Start Conversation
+            </button>
+
+            <button class="secondary" onclick="clearConversation()">
+                Clear Conversation
+            </button>
+
+            <div class="result" id="liveResult" aria-live="polite">
+                Your conversation will appear here.
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- TRANSLATION -->
+
+    <section id="translation">
+
+        <h2>🌐 Multilingual Translation</h2>
+
+        <div class="card">
+
+            <textarea id="translateInput"
+                maxlength="500"
+                placeholder="Type your English message..."></textarea>
+
+            <label for="targetLanguage">Choose language:</label>
+
+            <select id="targetLanguage">
+                <option value="ta">Tamil</option>
+                <option value="hi">Hindi</option>
+                <option value="fr">French</option>
+                <option value="es">Spanish</option>
+            </select>
+
+            <button id="translateBtn" onclick="translateMessage()">
+                Translate
+            </button>
+
+            <div class="result" id="translationResult" aria-live="polite">
+                Your translated message will appear here.
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- SOS -->
+
+    <section id="sos">
+
+        <h2>🆘 Emergency SOS Alert</h2>
+
+        <div class="card">
+
+            <label for="sosPhone">
+                Trusted Contact WhatsApp Number
+            </label>
+
+            <input type="tel"
+                id="sosPhone"
+                placeholder="Enter country code and phone number">
+
+            <label for="sosText">SOS Message</label>
+
+            <textarea id="sosText">SOS! I need help. Please contact me immediately.</textarea>
+
+            <button class="danger" onclick="sendSOS()">
+                Send SOS Message
+            </button>
+
+            <p id="sosStatus" aria-live="polite"></p>
+
+        </div>
+
+    </section>
+
+    <!-- AI ASSISTANT -->
+
+    <section id="assistant">
+
+        <h2>🤖 AI Personal Assistant</h2>
+
+        <div class="card">
+
+            <input type="text"
+                id="assistantQuestion"
+                placeholder="Ask a question...">
+
+            <button onclick="askAssistant()">
+                Ask Assistant
+            </button>
+
+            <div class="result" id="assistantAnswer" aria-live="polite">
+                Your answer will appear here.
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+    <p>ConnectPlus | Communication Without Barriers</p>
+</footer>
+
+<script>
+
+// NAVIGATION
+
+function go(id) {
+    document.getElementById(id).scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+// DARK MODE
+
+function toggleTheme() {
+    document.body.classList.toggle("dark");
+}
+
+// VISUAL NOTIFICATION
+
+function showNotification() {
+    const alertBox =
+        document.getElementById("visualAlert");
+
+    alertBox.classList.add("show");
+
+    alertBox.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+}
+
+function closeNotification() {
+    document.getElementById("visualAlert")
+        .classList.remove("show");
+}
+
+// TEXT TO SPEECH
+
+function speakText(text) {
+
+    if (!("speechSynthesis" in window)) {
+        alert("Text-to-Speech is not supported.");
+        return;
+    }
+
+    if (!text.trim()) {
+        alert("Please enter a message first.");
+        return;
+    }
+
+    speechSynthesis.cancel();
+
+    const speech =
+        new SpeechSynthesisUtterance(text);
+
+    speech.lang = "en-IN";
+
+    speechSynthesis.speak(speech);
+}
+
+// COMMUNICATION BOARD
+
+const phrases = [
+    ["👋", "Hello!"],
+    ["🆘", "Please help me."],
+    ["🙏", "Thank you."],
+    ["💧", "I need water."],
+    ["🩺", "I need a doctor."],
+    ["🍎", "I need food."],
+    ["🚻", "I need to go to the washroom."],
+    ["🤒", "I am feeling sick."],
+    ["📞", "Please call my family."],
+    ["❓", "I do not understand."],
+    ["🗣️", "Please speak slowly."],
+    ["✅", "Yes."],
+    ["❌", "No."],
+    ["😊", "I am happy."],
+    ["😔", "I am sad."]
+];
+
+const board = document.getElementById("boardButtons");
+
+phrases.forEach(([emoji, phrase]) => {
+
+    const button = document.createElement("button");
+
+    button.textContent = emoji + " " + phrase;
+
+    button.onclick = function() {
+        speakText(phrase);
+
+        document.getElementById("boardStatus")
+            .textContent = "Speaking: " + phrase;
+    };
+
+    board.appendChild(button);
+
+});
+
+// SPEECH TO TEXT
+
+let recognition = null;
+
+function startListening(targetId) {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        document.getElementById(targetId).textContent =
+            "Speech recognition is not supported in this browser.";
+        return;
+    }
+
+    stopListening();
+
+    recognition = new SpeechRecognition();
+
+    recognition.lang = "en-IN";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    const output = document.getElementById(targetId);
+
+    let finalText = "";
+
+    recognition.onstart = function() {
+        output.textContent = "Listening...";
+
+        document.getElementById("speechStatus")
+            .textContent = "Listening. Speak now.";
+    };
+
+    recognition.onresult = function(event) {
+
+        let interim = "";
+
+        for (let i = event.resultIndex;
+             i < event.results.length; i++) {
+
+            const transcript =
+                event.results[i][0].transcript;
+
+            if (event.results[i].isFinal) {
+                finalText += transcript + " ";
+            } else {
+                interim += transcript;
+            }
+        }
+
+        output.textContent =
+            (finalText + interim).trim();
+    };
+
+    recognition.onerror = function(event) {
+        document.getElementById("speechStatus")
+            .textContent = "Microphone error: " + event.error;
+    };
+
+    recognition.onend = function() {
+        document.getElementById("speechStatus")
+            .textContent = "Listening stopped.";
+    };
+
+    try {
+        recognition.start();
+    } catch (error) {
+        document.getElementById("speechStatus")
+            .textContent = "Could not start microphone. Try again.";
+    }
+
+}
+
+function stopListening() {
+
+    if (recognition) {
+        recognition.stop();
+        recognition = null;
+    }
+
+}
+
+// CLEAR CONVERSATION
+
+function clearConversation() {
+
+    document.getElementById("liveResult")
+        .textContent = "Your conversation will appear here.";
+
+}
+
+// TRANSLATION
+
+async function translateMessage() {
+
+    const message =
+        document.getElementById("translateInput")
+        .value.trim();
+
+    const language =
+        document.getElementById("targetLanguage").value;
+
+    const result =
+        document.getElementById("translationResult");
+
+    const button =
+        document.getElementById("translateBtn");
+
+    if (!message) {
+        result.textContent = "Please type a message first.";
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Translating...";
+
+    result.textContent = "Translating...";
+
+    try {
+
+        const url =
+            "https://api.mymemory.translated.net/get?q=" +
+            encodeURIComponent(message) +
+            "&langpair=en%7C" + language;
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("Translation request failed");
+        }
+
+        const data = await response.json();
+
+        if (data.responseStatus === 200) {
+
+            result.textContent =
+                data.responseData.translatedText;
+
+        } else {
+
+            result.textContent =
+                "Translation failed. Please try again.";
+
+        }
+
+    } catch (error) {
+
+        result.textContent =
+            "Please check your internet connection.";
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "Translate";
+
+    }
+
+}
+
+// SOS ALERT
+
+function sendSOS() {
+
+    const phone =
+        document.getElementById("sosPhone")
+        .value.trim().replace(/\D/g, "");
+
+    const message =
+        document.getElementById("sosText").value.trim();
+
+    const status =
+        document.getElementById("sosStatus");
+
+    if (phone.length < 8 || phone.length > 15) {
+        status.textContent =
+            "Please enter a valid phone number with country code.";
+        return;
+    }
+
+    if (!message) {
+        status.textContent = "Please enter an SOS message.";
+        return;
+    }
+
+    const url =
+        "https://wa.me/" + phone +
+        "?text=" + encodeURIComponent(message);
+
+    window.open(url, "_blank", "noopener,noreferrer");
+
+    status.textContent =
+        "WhatsApp opened. Review and send your message there.";
+
+}
+
+// PERSONAL ASSISTANT
+
+function askAssistant() {
+
+    const question =
+        document.getElementById("assistantQuestion")
+        .value.trim().toLowerCase();
+
+    const answer =
+        document.getElementById("assistantAnswer");
+
+    if (!question) {
+        answer.textContent = "Please type a question.";
+    }
+
+    else if (
+        question.includes("hello") ||
+        question.includes("hi")
+    ) {
+        answer.textContent =
+            "Hello! Welcome to ConnectPlus. How can I help you?";
+    }
+
+    else if (
+        question.includes("speech") ||
+        question.includes("communicate") ||
+        question.includes("voice")
+    ) {
+        answer.textContent =
+            "Use Speech-to-Text to convert speech into text. " +
+            "Use Text-to-Speech to speak your message aloud.";
+    }
+
+    else if (question.includes("board")) {
+        answer.textContent =
+            "Open the Communication Board and click any ready-made message.";
+    }
+
+    else if (
+        question.includes("sos") ||
+        question.includes("emergency")
+    ) {
+        answer.textContent =
+            "Open the SOS section, enter your trusted contact's number, " +
+            "and open WhatsApp to send an emergency message.";
+    }
+
+    else if (question.includes("translate")) {
+        answer.textContent =
+            "Open Multilingual Translation, type a message, " +
+            "choose a language and click Translate.";
+    }
+
+    else if (question.includes("notification")) {
+        answer.textContent =
+            "Choose Visual Notifications and click Open to display an alert.";
+    }
+
+    else if (question.includes("help")) {
+        answer.textContent =
+            "ConnectPlus offers speech tools, a communication board, " +
+            "translation, visual alerts and SOS messaging.";
+    }
+
+    else {
+        answer.textContent =
+            "Sorry, I do not know that answer yet. " +
+            "Try asking about communication, board, translation or SOS.";
+    }
+
+}
+
+</script>
+
+</body>
+</html>

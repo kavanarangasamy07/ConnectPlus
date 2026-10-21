@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ConnectPlus | Communication Without Barriers</title>
+  <meta name="description" content="AI-powered accessibility platform for deaf, hard of hearing, mute, and speech-impaired individuals. Real-time speech tools, communication board, live captions, translations, and emergency SOS.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1E6FD9">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="ConnectPlus | Communication Without Barriers">
+  <meta property="og:description" content="AI-powered accessibility web app for deaf, hard-of-hearing, and speech-impaired individuals.">
+  <meta property="og:image" content="/logo.jpg">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Poppins for rounded modern friendly typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body data-theme="light">
+  <!-- Skip Link for Keyboard & Screen Reader Users (WCAG 2.2 AA) -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Full-Screen Visual Flash Alert Overlay -->
+  <div id="visualFlashOverlay" class="visual-flash-overlay" aria-hidden="true"></div>
+
+  <!-- STICKY GLASS NAVBAR -->
+  <header class="site-header" role="banner">
+    <div class="container navbar">
+      <a href="#" class="brand-link" aria-label="ConnectPlus Home">
+        <img src="/logo.jpg" alt="ConnectPlus Logo" class="brand-logo-img">
+        <span>Connect<strong style="color: var(--teal);">+</strong></span>
+      </a>
+
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#features" class="nav-link">Overview</a></li>
+          <li><a href="#communication" class="nav-link">Speech</a></li>
+          <li><a href="#board" class="nav-link">Board</a></li>
+          <li><a href="#live" class="nav-link">Live Captions</a></li>
+          <li><a href="#translation" class="nav-link">Translation</a></li>
+          <li><a href="#alerts" class="nav-link">Alerts</a></li>
+          <li><a href="#sos" class="nav-link" style="color: var(--color-danger); font-weight: 700;">SOS</a></li>
+          <li><a href="#assistant" class="nav-link">AI Assistant</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="themeToggleBtn" class="btn-secondary theme-toggle-btn" aria-label="Toggle theme mode" aria-pressed="false">
+          🌙 Theme: Light
+        </button>
+        <button id="openShortcutsModalBtn" class="btn-secondary" style="padding: 8px 12px; font-size: 0.9rem;" title="Keyboard shortcuts (?)" aria-label="Keyboard Shortcuts Help">
+          ⌨️ Help
+        </button>
+        <button class="install-pwa-btn" aria-label="Install ConnectPlus as an application">
+          📲 Install App
+        </button>
+        <button id="menuToggleBtn" class="menu-toggle-btn" aria-label="Toggle mobile menu" aria-expanded="false">
+          ☰
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero-section" aria-labelledby="hero-heading">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <h1 id="hero-heading">
+          Communication<br>
+          <span class="gradient-text">Without Barriers.</span>
+        </h1>
+        <p class="hero-tagline">
+          An AI-powered accessibility platform designed for deaf, hard of hearing, mute, and speech-impaired individuals. Fast, intuitive, and private by design.
+        </p>
+        <div class="hero-cta-group">
+          <a href="#features" class="btn" style="text-decoration: none;">
+            Explore Tools ↓
+          </a>
+          <a href="#board" class="btn btn-secondary" style="text-decoration: none;">
+            Open Communication Board 📝
+          </a>
+          <button class="install-pwa-btn" style="background: linear-gradient(135deg, var(--teal), var(--primary-blue));">
+            📲 Install App
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-logo-wrapper">
+        <div class="hero-logo-tile" title="ConnectPlus Emblem">
+          <img src="/logo.jpg" alt="ConnectPlus Accessibility Emblem" class="hero-logo-img">
+          <div class="hero-plus-badge" aria-hidden="true">+</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN APPLICATION CONTENT -->
+  <main id="main-content" class="container" style="margin-top: 32px;" role="main">
+
+    <!-- OVERVIEW FEATURES GRID -->
+    <section id="features" class="feature-section" aria-labelledby="features-heading">
+      <div class="section-header">
+        <h2 id="features-heading">⚡ Everything You Need in One Place</h2>
+        <p>Select any tool below to immediately communicate with confidence.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3 style="color: var(--primary-blue);">🗣️ Two-Way Communication</h3>
+          <p style="margin: 8px 0 16px;">Real-time Speech-to-Text with sound wave visualizer and customizable Text-to-Speech voices.</p>
+          <a href="#communication" class="btn btn-secondary" style="text-decoration: none; display: inline-flex;">Open Speech Tools &rarr;</a>
+        </div>
+
+        <div class="card">
+          <h3 style="color: var(--teal);">📝 Communication Board</h3>
+          <p style="margin: 8px 0 16px;">One-tap emoji tiles, customizable phrases, drag-to-reorder, and chained sentence builder.</p>
+          <a href="#board" class="btn btn-secondary" style="text-decoration: none; display: inline-flex;">Open Board &rarr;</a>
+        </div>
+
+        <div class="card">
+          <h3 style="color: var(--bright-blue);">💬 Live Conversation</h3>
+          <p style="margin: 8px 0 16px;">High-contrast captions with 16-64px font slider, transcripts export, and WebSocket room sharing.</p>
+          <a href="#live" class="btn btn-secondary" style="text-decoration: none; display: inline-flex;">Open Live Captions &rarr;</a>
+        </div>
+
+        <div class="card">
+          <h3 style="color: #8B5CF6;">🌐 Multilingual Translation</h3>
+          <p style="margin: 8px 0 16px;">Translate across 10 languages with auto-detect, matching voice synthesis, and offline queueing.</p>
+          <a href="#translation" class="btn btn-secondary" style="text-decoration: none; display: inline-flex;">Open Translator &rarr;</a>
+        </div>
+
+        <div class="card">
+          <h3 style="color: #F59E0B;">🔔 Visual Notifications</h3>
+          <p style="margin: 8px 0 16px;">Edge-of-screen glow flashes, banner toasts, and haptic vibration cues for deaf users.</p>
+          <a href="#alerts" class="btn btn-secondary" style="text-decoration: none; display: inline-flex;">Open Alert Settings &rarr;</a>
+        </div>
+
+        <div class="card" style="border-color: rgba(220, 38, 38, 0.4);">
+          <h3 style="color: var(--color-danger);">🆘 Emergency SOS</h3>
+          <p style="margin: 8px 0 16px;">One-touch SOS with 3-second countdown, GPS consent, WhatsApp and SMS quick links.</p>
+          <a href="#sos" class="btn btn-danger" style="text-decoration: none; display: inline-flex;">Open SOS System &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURE 1: TWO-WAY COMMUNICATION -->
+    <section id="communication" class="feature-section" aria-labelledby="comm-heading">
+      <div class="section-header">
+        <h2 id="comm-heading">🗣️ Two-Way Communication</h2>
+        <p>Transcribe incoming speech into live text, and type messages to be spoken aloud.</p>
+      </div>
+
+      <div class="grid-2">
+        <!-- Speech to Text Card -->
+        <div class="card" aria-labelledby="stt-heading">
+          <h3 id="stt-heading">🎤 Speech to Text (Live Mic)</h3>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+            <div id="speechMicBadge" class="mic-status-badge idle">💤 Idle</div>
+            <div>
+              <label for="speechLangSelect" class="sr-only" style="position: absolute; width: 1px; height: 1px; overflow: hidden;">Recognition Language</label>
+              <select id="speechLangSelect" style="width: auto; padding: 6px 12px; margin: 0; min-height: 38px;">
+                <option value="en-IN">English (India)</option>
+                <option value="en-US">English (US)</option>
+                <option value="hi-IN">Hindi (हिन्दी)</option>
+                <option value="ta-IN">Tamil (தமிழ்)</option>
+                <option value="es-ES">Spanish (Español)</option>
+                <option value="fr-FR">French (Français)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Sound Wave Visualizer Canvas -->
+          <canvas id="speechVisualizerCanvas" class="audio-visualizer-canvas" width="400" height="60" aria-label="Audio wave visualizer"></canvas>
+
+          <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+            <button id="startSpeechBtn">🎙️ Start Speaking</button>
+            <button id="stopSpeechBtn" class="btn-secondary">⏹️ Stop</button>
+            <button id="clearSpeechBtn" class="btn-secondary">🗑️ Clear</button>
+          </div>
+
+          <p id="speechStatus" style="font-size: 0.85rem; margin-bottom: 8px;">Microphone is idle.</p>
+          <div id="speechResult" class="transcription-box" aria-live="polite" aria-atomic="false">
+            Spoken words will appear here in real time...
+          </div>
+        </div>
+
+        <!-- Text to Speech Card -->
+        <div class="card" aria-labelledby="tts-heading">
+          <h3 id="tts-heading">🔊 Text to Speech (Voice Synthesizer)</h3>
+
+          <label for="ttsMessageInput" style="display: block; font-size: 0.9rem; font-weight: 600; margin-top: 10px;">Type message to speak aloud:</label>
+          <textarea id="ttsMessageInput" placeholder="Type what you want to say here..."></textarea>
+
+          <div style="display: grid; grid-template-columns: 1fr; gap: 8px; margin: 8px 0;">
+            <div>
+              <label for="ttsVoiceSelect" style="font-size: 0.85rem; font-weight: 600;">Synthesizer Voice:</label>
+              <select id="ttsVoiceSelect" style="margin-top: 4px;"></select>
+            </div>
+          </div>
+
+          <div class="grid-2" style="gap: 12px;">
+            <div class="slider-group">
+              <label for="ttsRateSlider"><span>Speed Rate:</span> <span id="ttsRateVal">1.0x</span></label>
+              <input type="range" id="ttsRateSlider" min="0.5" max="2.0" step="0.1" value="1.0">
+            </div>
+            <div class="slider-group">
+              <label for="ttsPitchSlider"><span>Voice Pitch:</span> <span id="ttsPitchVal">1.0</span></label>
+              <input type="range" id="ttsPitchSlider" min="0.5" max="1.5" step="0.1" value="1.0">
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 12px;">
+            <button id="speakTextBtn">🔊 Speak Message</button>
+            <button id="stopVoiceBtn" class="btn-secondary">⏹️ Stop Voice</button>
+          </div>
+
+          <!-- Highlighted Word-by-Word Reading Output -->
+          <div id="ttsReadingHighlight" style="margin-top: 14px; min-height: 44px; padding: 12px; background: var(--bg-surface-subtle); border-radius: var(--radius-md); font-size: 1.05rem;" aria-live="polite">
+            Spoken words will highlight here as they are voiced...
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURE 2: COMMUNICATION BOARD -->
+    <section id="board" class="feature-section" aria-labelledby="board-heading">
+      <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <h2 id="board-heading">📝 Communication Board</h2>
+          <p>Tap ready tiles to speak instantly or chain phrases in the sentence builder.</p>
+        </div>
+        <button id="openAddPhraseModalBtn" class="btn-secondary">
+          ➕ Add Custom Phrase
+        </button>
+      </div>
+
+      <!-- Sentence Builder Bar -->
+      <div class="sentence-builder-bar" id="sentenceBuilderBar" aria-label="Sentence Builder">
+        <div class="sentence-builder-chips" id="sentenceChipsContainer" role="region" aria-live="polite">
+          <span style="color: var(--text-muted); font-size: 0.95rem;">Tap tiles to build a complete sentence here...</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button id="speakSentenceBtn" style="padding: 10px 16px;">🔊 Speak</button>
+          <button id="clearSentenceBtn" class="btn-secondary" style="padding: 10px 14px;">Clear</button>
+        </div>
+      </div>
+
+      <!-- Categories & Search -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+          <div class="category-tabs" role="tablist" aria-label="Board categories">
+            <button class="category-tab-btn active" data-cat="all" role="tab" aria-selected="true">All</button>
+            <button class="category-tab-btn" data-cat="favorites" role="tab" aria-selected="false">⭐ Favorites</button>
+            <button class="category-tab-btn" data-cat="basic" role="tab" aria-selected="false">👋 Basic</button>
+            <button class="category-tab-btn" data-cat="health" role="tab" aria-selected="false">🩺 Health</button>
+            <button class="category-tab-btn" data-cat="food" role="tab" aria-selected="false">💧 Food &amp; Water</button>
+            <button class="category-tab-btn" data-cat="emotions" role="tab" aria-selected="false">😊 Emotions</button>
+            <button class="category-tab-btn" data-cat="emergency" role="tab" aria-selected="false">🆘 Emergency</button>
+            <button class="category-tab-btn" data-cat="custom" role="tab" aria-selected="false">✨ Custom</button>
+          </div>
+          <div style="flex: 1; max-width: 320px;">
+            <input type="text" id="boardSearchInput" placeholder="🔍 Search phrases..." aria-label="Search communication board phrases" style="margin: 0; padding: 8px 14px; min-height: 40px;">
+          </div>
+        </div>
+
+        <!-- Tile Grid -->
+        <div class="tiles-grid" id="boardTilesContainer" role="region" aria-label="Phrases Grid"></div>
+      </div>
+    </section>
+
+    <!-- FEATURE 3: LIVE CONVERSATION -->
+    <section id="live" class="feature-section" aria-labelledby="live-heading">
+      <div class="section-header">
+        <h2 id="live-heading">💬 Live Conversation &amp; Room Sharing</h2>
+        <p>Continuous large captions with resizable text, transcript downloads, and WebSocket live room sharing.</p>
+      </div>
+
+      <div class="card">
+        <div class="live-controls-bar">
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+            <button id="toggleLiveListeningBtn">🎤 Start Conversation</button>
+            <button id="pauseLiveBtn" class="btn-secondary">⏸️ Pause</button>
+            <button id="copyLiveTranscriptBtn" class="btn-secondary">📋 Copy</button>
+            <button id="downloadLiveTranscriptBtn" class="btn-secondary">💾 Download (.txt)</button>
+            <button id="clearLiveTranscriptBtn" class="btn-secondary">🗑️ Clear</button>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <div>
+              <label for="liveSpeakerSelect" style="font-size: 0.85rem; font-weight: 600; margin-right: 6px;">Speaker:</label>
+              <select id="liveSpeakerSelect" style="width: auto; padding: 6px 12px; margin: 0; min-height: 38px;">
+                <option value="Speaker 1">Speaker 1</option>
+                <option value="Speaker 2">Speaker 2</option>
+                <option value="You">You</option>
+                <option value="Doctor">Doctor</option>
+                <option value="Caregiver">Caregiver</option>
+              </select>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label for="liveFontSizeSlider" style="font-size: 0.85rem; font-weight: 600;">Font Size:</label>
+              <input type="range" id="liveFontSizeSlider" min="16" max="64" value="24" style="width: 100px;">
+              <span id="liveFontSizeVal" style="font-size: 0.85rem; font-weight: 600; min-width: 38px;">24px</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Room Code Sharing Bar -->
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; background: var(--bg-surface-subtle); padding: 12px 18px; border-radius: var(--radius-md); margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <span style="font-weight: 600; font-size: 0.9rem;">📡 Live Room Code:</span>
+            <input type="text" id="liveRoomCodeInput" placeholder="e.g. 4821" style="width: 110px; padding: 6px 10px; margin: 0; min-height: 36px; text-transform: uppercase;">
+            <button id="joinLiveRoomBtn" class="btn-secondary" style="padding: 6px 14px; min-height: 36px; font-size: 0.85rem;">
+              Connect / Share Room
+            </button>
+          </div>
+          <div id="liveRoomStatus" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
+            Room not connected
+          </div>
+        </div>
+
+        <p id="liveMicStatus" style="font-size: 0.85rem; margin-bottom: 8px; color: var(--text-muted);">Microphone is idle.</p>
+
+        <!-- Captions Viewport -->
+        <div id="liveCaptionsViewport" class="captions-viewport" role="log" aria-live="polite" aria-atomic="false">
+          <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+            <p style="font-size: 1.15rem;">No conversation yet. Tap <strong>Start Conversation</strong> to speak, or connect a Room Code to read live shared captions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURE 4: MULTILINGUAL TRANSLATION -->
+    <section id="translation" class="feature-section" aria-labelledby="trans-heading">
+      <div class="section-header">
+        <h2 id="trans-heading">🌐 Multilingual Translation</h2>
+        <p>Translate messages across 10 languages with offline queueing and voice pronunciation.</p>
+      </div>
+
+      <div class="card">
+        <div class="grid-2">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label for="translateInput" style="font-weight: 600; font-size: 0.9rem;">Source Text (Auto-detect):</label>
+              <span id="transCharCount" class="char-counter">0/500</span>
+            </div>
+            <textarea id="translateInput" maxlength="500" placeholder="Type words or paste text here to translate..."></textarea>
+          </div>
+
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label for="targetLanguage" style="font-weight: 600; font-size: 0.9rem;">Target Language:</label>
+              <button id="swapLanguageBtn" class="btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; min-height: 30px;" title="Swap source and translated text">
+                ⇄ Swap
+              </button>
+            </div>
+            <select id="targetLanguage" style="margin: 0 0 10px 0;">
+              <option value="ta">Tamil (தமிழ்)</option>
+              <option value="hi">Hindi (हिन्दी)</option>
+              <option value="fr">French (Français)</option>
+              <option value="es">Spanish (Español)</option>
+              <option value="te">Telugu (తెలుగు)</option>
+              <option value="kn">Kannada (ಕನ್ನಡ)</option>
+              <option value="ml">Malayalam (മലയാളം)</option>
+              <option value="bn">Bengali (বাংলা)</option>
+              <option value="ar">Arabic (العربية)</option>
+              <option value="de">German (Deutsch)</option>
+            </select>
+            <div id="translationResult" class="transcription-box" aria-live="polite" style="min-height: 100px;">
+              Your translated message will appear here.
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
+          <button id="translateBtn">🌐 Translate</button>
+          <button id="speakTranslationBtn" class="btn-secondary">🔊 Speak Translation</button>
+          <button id="copyTranslationBtn" class="btn-secondary">📋 Copy</button>
+        </div>
+
+        <!-- History of Last 10 Translations -->
+        <div class="translation-history">
+          <h4 style="font-size: 0.95rem; margin-bottom: 8px;">Recent Translations (Last 10):</h4>
+          <div id="translationHistoryList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURE 5: VISUAL NOTIFICATIONS -->
+    <section id="alerts" class="feature-section" aria-labelledby="alerts-heading">
+      <div class="section-header">
+        <h2 id="alerts-heading">🔔 Visual Notifications &amp; Sensory Settings</h2>
+        <p>Full-screen glowing edge flash and haptic vibration designed for deaf and hard-of-hearing users.</p>
+      </div>
+
+      <div class="card">
+        <p style="margin-bottom: 16px;">
+          When someone speaks, an SOS is triggered, or a translation finishes, ConnectPlus pulses the perimeter of your screen with a vibrant color and vibrates your device.
+        </p>
+
+        <div class="grid-3" style="margin-bottom: 20px;">
+          <div>
+            <label for="alertColorSelect" style="font-weight: 600; font-size: 0.9rem;">Flash Color:</label>
+            <select id="alertColorSelect">
+              <option value="#00F0FF">Cyan Neon (#00F0FF)</option>
+              <option value="#F59E0B">Amber Gold (#F59E0B)</option>
+              <option value="#10B981">Emerald Green (#10B981)</option>
+              <option value="#EC4899">Hot Pink (#EC4899)</option>
+              <option value="#EF4444">Emergency Red (#EF4444)</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="alertDurationSelect" style="font-weight: 600; font-size: 0.9rem;">Flash Duration:</label>
+            <select id="alertDurationSelect">
+              <option value="0.5">Quick (0.5s)</option>
+              <option value="0.8">Normal (0.8s)</option>
+              <option value="1.5">Extended (1.5s)</option>
+              <option value="2.0">Long (2.0s)</option>
+            </select>
+          </div>
+
+          <div style="display: flex; align-items: flex-end;">
+            <button id="testAlertBtn" class="btn" style="width: 100%; min-height: 44px;">
+              🔔 Test Flash Alert Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURE 6: EMERGENCY SOS -->
+    <section id="sos" class="feature-section" aria-labelledby="sos-heading">
+      <div class="section-header">
+        <h2 id="sos-heading" style="color: var(--color-danger);">🆘 Emergency SOS Alert</h2>
+        <p>One-touch emergency dispatch with 3-second safety cancel countdown, GPS consent, WhatsApp, and SMS links.</p>
+      </div>
+
+      <div class="card sos-container">
+        <!-- Trusted Contacts Bar -->
+        <div style="margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="font-size: 0.95rem;">Trusted Emergency Contacts (Saved Locally):</strong>
+            <button id="addTrustedContactBtn" class="btn-secondary" style="padding: 4px 10px; font-size: 0.85rem; min-height: 32px;">
+              ➕ Add Contact
+            </button>
+          </div>
+          <div id="sosContactsList"></div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label for="sosPhone" style="font-weight: 600; font-size: 0.9rem;">
+              Recipient WhatsApp / Phone (Country Code Required):
+            </label>
+            <input type="tel" id="sosPhone" placeholder="+91 9876543210" aria-required="true">
+
+            <div style="margin: 12px 0;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.95rem;">
+                <input type="checkbox" id="sosLocationConsent" style="width: 20px; height: 20px; margin: 0; min-height: auto;">
+                <span>📍 Include my current GPS location (Google Maps link)</span>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label for="sosText" style="font-weight: 600; font-size: 0.9rem;">Emergency Message:</label>
+            <textarea id="sosText">SOS! I need immediate help. Please contact or come to me right away.</textarea>
+          </div>
+        </div>
+
+        <button id="triggerSOSBtn" class="big-sos-btn btn-danger">
+          🚨 TRIGGER EMERGENCY SOS (3s CANCEL)
+        </button>
+
+        <div id="sosStatus" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- FEATURE 7: AI PERSONAL ASSISTANT -->
+    <section id="assistant" class="feature-section" aria-labelledby="assistant-heading">
+      <div class="section-header">
+        <h2 id="assistant-heading">🤖 AI Personal Assistant</h2>
+        <p>Ask questions via text or voice to get instant guidance on all ConnectPlus accessibility tools.</p>
+      </div>
+
+      <div class="card" style="padding: 0; overflow: hidden;">
+        <div class="chat-window">
+          <div class="chat-messages" id="chatMessages" role="log" aria-live="polite"></div>
+
+          <div class="chat-chips" id="chatChips" aria-label="Suggested questions"></div>
+
+          <div class="chat-input-bar">
+            <input type="text" id="chatInput" placeholder="Ask a question about ConnectPlus..." aria-label="Ask assistant question" style="margin: 0;">
+            <button id="chatMicBtn" class="btn-secondary" style="padding: 10px 14px;" title="Speak question" aria-label="Speak question with microphone">
+              🎙️
+            </button>
+            <button id="chatSendBtn" style="padding: 10px 20px;">
+              Send &rarr;
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SOS COUNTDOWN MODAL -->
+  <div id="sosCountdownModal" class="countdown-modal" role="dialog" aria-modal="true" aria-labelledby="countdown-title">
+    <div class="countdown-card">
+      <h2 id="countdown-title" style="color: var(--color-danger); justify-content: center;">🚨 SENDING EMERGENCY SOS</h2>
+      <p style="margin: 10px 0;">Sending emergency alert to trusted contacts in:</p>
+      <div class="countdown-circle" id="sosCountdownCircle" aria-live="assertive">3</div>
+      <button id="cancelSOSBtn" class="btn-secondary" style="width: 100%; font-size: 1.1rem; padding: 14px;">
+        ✕ Cancel SOS Alert
+      </button>
+    </div>
+  </div>
+
+  <!-- ADD CUSTOM PHRASE MODAL -->
+  <div id="addPhraseModal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-add-phrase-title">
+    <div class="modal-content">
+      <h3 id="modal-add-phrase-title">➕ Add Custom Communication Tile</h3>
+      <p style="margin: 6px 0 16px; font-size: 0.9rem;">Create your own phrase tile for the board. It will be saved on your device and synced securely.</p>
+
+      <div style="margin-bottom: 12px;">
+        <label for="customPhraseEmoji" style="font-weight: 600; font-size: 0.85rem;">Emoji Icon:</label>
+        <input type="text" id="customPhraseEmoji" value="💬" maxlength="4" style="width: 80px;">
+      </div>
+
+      <div style="margin-bottom: 12px;">
+        <label for="customPhraseText" style="font-weight: 600; font-size: 0.85rem;">Phrase Text:</label>
+        <input type="text" id="customPhraseText" placeholder="e.g. Please open the door for me.">
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label for="customPhraseCategory" style="font-weight: 600; font-size: 0.85rem;">Category:</label>
+        <select id="customPhraseCategory">
+          <option value="custom">Custom</option>
+          <option value="basic">Basic</option>
+          <option value="health">Health</option>
+          <option value="food">Food &amp; Water</option>
+          <option value="emotions">Emotions</option>
+          <option value="emergency">Emergency</option>
+        </select>
+      </div>
+
+      <div style="display: flex; gap: 10px; justify-content: flex-end;">
+        <button id="cancelAddPhraseBtn" class="btn-secondary">Cancel</button>
+        <button id="saveCustomPhraseBtn">Save Tile</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KEYBOARD SHORTCUTS HELP MODAL -->
+  <div id="shortcutsModal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-shortcuts-title">
+    <div class="modal-content">
+      <h3 id="modal-shortcuts-title">⌨️ Keyboard Shortcuts &amp; Accessibility</h3>
+      <p style="margin: 6px 0 16px; font-size: 0.9rem;">Navigate ConnectPlus quickly using these standard accessibility shortcuts:</p>
+
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.95rem;">
+        <tbody>
+          <tr style="border-bottom: 1px solid var(--border-subtle);"><td style="padding: 8px 0;"><strong>Alt + M</strong></td><td>Toggle Speech-to-Text Microphone</td></tr>
+          <tr style="border-bottom: 1px solid var(--border-subtle);"><td style="padding: 8px 0;"><strong>Alt + B</strong></td><td>Jump to Communication Board</td></tr>
+          <tr style="border-bottom: 1px solid var(--border-subtle);"><td style="padding: 8px 0;"><strong>Alt + L</strong></td><td>Jump to Live Captions</td></tr>
+          <tr style="border-bottom: 1px solid var(--border-subtle);"><td style="padding: 8px 0;"><strong>Alt + T</strong></td><td>Cycle Themes (Light &rarr; Dark &rarr; High-Contrast)</td></tr>
+          <tr style="border-bottom: 1px solid var(--border-subtle);"><td style="padding: 8px 0;"><strong>Alt + S</strong></td><td>Trigger Emergency SOS with Countdown</td></tr>
+          <tr style="border-bottom: 1px solid var(--border-subtle);"><td style="padding: 8px 0;"><strong>?</strong> (Shift + /)</td><td>Open this Keyboard Shortcuts Dialog</td></tr>
+          <tr><td style="padding: 8px 0;"><strong>Esc</strong></td><td>Dismiss Open Dialogs and Modals</td></tr>
+        </tbody>
+      </table>
+
+      <div style="text-align: right;">
+        <button id="closeShortcutsBtn" class="btn">Close Help</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATIONS CONTAINER -->
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- SITE FOOTER -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-content">
+      <div>
+        <div class="footer-brand">
+          <img src="/logo.jpg" alt="ConnectPlus" style="height: 38px; width: 38px; border-radius: 10px; object-fit: cover;">
+          <span>Connect<strong style="color: var(--teal);">+</strong></span>
+        </div>
+        <p style="margin-top: 6px; font-size: 0.9rem; color: #94A3B8;">Communication Without Barriers &bull; Built with Privacy by Design</p>
+      </div>
+
+      <div style="font-size: 0.85rem; color: #94A3B8; text-align: right;">
+        <p>WCAG 2.2 AA Compliant &bull; 100% Client-Side Voice Processing</p>
+        <p style="margin-top: 4px;">No personal voice data or emergency contacts are ever sold or stored in plain text.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

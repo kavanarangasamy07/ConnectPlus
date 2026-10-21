@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline Mode | ConnectPlus</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      --bg: #0B1220;
+      --card: #152238;
+      --text: #F4F8FC;
+      --accent: #1E90FF;
+      --teal: #12A89D;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid #2A3F60;
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 480px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    h1 {
+      font-size: 28px;
+      margin-top: 10px;
+      color: #60A5FA;
+    }
+    p {
+      line-height: 1.6;
+      color: #CBD5E1;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      background: linear-gradient(135deg, #1E6FD9, #12A89D);
+      color: white;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+    }
+    .offline-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #78350F;
+      color: #FDE68A;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="offline-badge">
+      <span>⚡</span> You are currently offline
+    </div>
+    <h1>ConnectPlus Offline Mode</h1>
+    <p>
+      Don't worry! ConnectPlus works offline. Your Communication Board, Text-to-Speech, Visual Alerts, and Emergency SOS are available right now on your device.
+    </p>
+    <button class="btn" onclick="window.location.href='/'">
+      Return to Main App
+    </button>
+  </div>
+</body>
+</html>

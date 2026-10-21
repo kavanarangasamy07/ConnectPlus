@@ -1,0 +1,202 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: background-color var(--trans-normal), color var(--trans-normal);
+  overflow-x: hidden;
+}
+
+/* Skip link for screen reader and keyboard accessibility */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  background: var(--bright-blue);
+  color: white;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  z-index: 99999;
+  text-decoration: none;
+  transition: top var(--trans-fast);
+}
+
+.skip-link:focus {
+  top: 16px;
+  outline: 3px solid #000;
+}
+
+/* Visible Focus Indicator (WCAG 2.2 AA) */
+:focus-visible {
+  outline: 3px solid var(--border-focus);
+  outline-offset: 3px;
+}
+
+/* Headings */
+h1, h2, h3, h4 {
+  color: var(--text-main);
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+h3 {
+  font-size: 1.25rem;
+}
+
+p {
+  color: var(--text-muted);
+}
+
+/* Form Controls and Buttons Base */
+button, input, textarea, select {
+  font-family: inherit;
+  font-size: 1rem;
+  color: inherit;
+}
+
+/* Minimum 44x44px touch targets */
+button, a.btn, select, input[type="text"], input[type="tel"], textarea {
+  min-height: 44px;
+}
+
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--primary-blue), var(--bright-blue));
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 22px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--trans-fast), box-shadow var(--trans-fast), background var(--trans-fast);
+  box-shadow: 0 4px 14px rgba(30, 111, 217, 0.25);
+  user-select: none;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(30, 111, 217, 0.35);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Secondary Button Style */
+button.btn-secondary {
+  background: var(--bg-surface-subtle);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  box-shadow: none;
+}
+
+button.btn-secondary:hover:not(:disabled) {
+  background: var(--bg-surface-elevated);
+  border-color: var(--bright-blue);
+  color: var(--primary-blue);
+}
+
+/* Danger Button Style */
+button.btn-danger {
+  background: linear-gradient(135deg, var(--color-danger), #EF4444);
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
+}
+
+button.btn-danger:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--color-danger-hover), #DC2626);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.45);
+}
+
+/* Inputs & Textareas */
+input[type="text"],
+input[type="tel"],
+textarea,
+select {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  transition: border-color var(--trans-fast), box-shadow var(--trans-fast);
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--bright-blue);
+  box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.2);
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Layout container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Section Wrapper */
+section.feature-section {
+  padding: 48px 0;
+  scroll-margin-top: 80px;
+}
+
+.section-header {
+  margin-bottom: 24px;
+}
+
+.section-header p {
+  margin-top: 6px;
+  font-size: 1.05rem;
+}

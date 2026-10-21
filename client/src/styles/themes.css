@@ -1,0 +1,41 @@
+/* High-Contrast Mode Refinements (WCAG AAA) */
+body[data-theme='high-contrast'] .card,
+body[data-theme='high-contrast'] .tile-btn,
+body[data-theme='high-contrast'] .sentence-builder-bar,
+body[data-theme='high-contrast'] .chat-window,
+body[data-theme='high-contrast'] .captions-viewport {
+  border: 2px solid #FFFFFF !important;
+  box-shadow: none !important;
+}
+
+body[data-theme='high-contrast'] button {
+  border: 2px solid #FFFFFF !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+body[data-theme='high-contrast'] button.btn-secondary {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+  border-color: #FFFFFF !important;
+}
+
+body[data-theme='high-contrast'] button.btn-danger {
+  background: #FF0000 !important;
+  color: #FFFFFF !important;
+}
+
+body[data-theme='high-contrast'] .chat-bubble.assistant {
+  border: 2px solid #00FFFF !important;
+  color: #FFFFFF !important;
+}
+
+body[data-theme='high-contrast'] .chat-bubble.user {
+  background: #FFFF00 !important;
+  color: #000000 !important;
+}
+
+body[data-theme='high-contrast'] :focus-visible {
+  outline: 4px solid #00FF00 !important;
+  outline-offset: 4px !important;
+}
