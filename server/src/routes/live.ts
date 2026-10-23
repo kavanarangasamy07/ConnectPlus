@@ -1,5 +1,5 @@
-import { FastifyInstance } from 'fastify';
-import { WebSocket } from 'ws';
+import { Server as HttpServer } from 'node:http';
+import { WebSocketServer, WebSocket } from 'ws';
 import { LiveMessage } from '../types.js';
 
 interface ClientConnection {
@@ -11,8 +11,10 @@ interface ClientConnection {
 
 export const liveRooms = new Map<string, Set<ClientConnection>>();
 
-export async function liveWebSocketRoute(app: FastifyInstance) {
-  app.get('/live', { websocket: true }, (socket, _req) => {
+export function setupLiveWebSocket(server: HttpServer): WebSocketServer {
+  const wss = new WebSocketServer({ server, path: '/live' });
+
+  wss.on('connection', (socket: WebSocket) => {
     const conn: ClientConnection = {
       socket,
       isAlive: true
@@ -92,7 +94,7 @@ export async function liveWebSocketRoute(app: FastifyInstance) {
             }
           }
         }
-      } catch (err) {
+      } catch {
         socket.send(
           JSON.stringify({
             type: 'error',
@@ -119,7 +121,6 @@ export async function liveWebSocketRoute(app: FastifyInstance) {
     });
   });
 
-  // Heartbeat interval every 30s to detect broken connections
   const interval = setInterval(() => {
     for (const [roomCode, clients] of liveRooms.entries()) {
       for (const client of Array.from(clients)) {
@@ -137,7 +138,9 @@ export async function liveWebSocketRoute(app: FastifyInstance) {
     }
   }, 30000);
 
-  app.addHook('onClose', () => {
+  wss.on('close', () => {
     clearInterval(interval);
   });
+
+  return wss;
 }

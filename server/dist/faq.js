@@ -1,83 +1,91 @@
 export const FAQ_DATABASE = [
     {
         id: 'intro',
-        keywords: ['hello', 'hi', 'hey', 'start', 'begin', 'welcome', 'who are you', 'what is this'],
-        patterns: [/\b(hello|hi|hey|greetings|welcome)\b/i],
-        question: 'What is ConnectPlus and how does it help?',
-        answer: 'ConnectPlus is an AI-powered accessibility platform designed for deaf, hard-of-hearing, mute, and speech-impaired individuals. It provides real-time Two-Way Speech & Text, an interactive Communication Board, Live Captions, Multilingual Translation, Visual Flash Alerts, and one-tap Emergency SOS.',
-        suggestions: ['How do I use the board?', 'Can I use this offline?', 'How does SOS work?']
+        keywords: ['hello', 'hi', 'hey', 'start', 'begin', 'welcome', 'who are you', 'what is this', 'about'],
+        patterns: [/\b(hello|hi|hey|greetings|welcome|what is connectplus|who are you)\b/i],
+        question: 'What is ConnectPlus and how does it empower communication?',
+        answer: 'ConnectPlus is an advanced, privacy-first accessibility platform designed for deaf, hard-of-hearing, mute, and speech-impaired individuals. It features Two-Way Speech & Text, an Interactive Communication Board, Live Captions with cross-device room codes, Multilingual Translation in 5 Indian languages (English, Tamil, Telugu, Malayalam, Kannada), Sudden Shake & Loud Noise Detection, Unified Sensory Alerts, and secure Emergency SOS SMS.',
+        suggestions: ['How do I use the Communication Board?', 'How does Sudden Shake & Noise Detection work?', 'How does Emergency SOS work?', 'Can I use ConnectPlus offline?']
     },
     {
         id: 'board-usage',
-        keywords: ['board', 'communication board', 'emoji', 'phrase', 'speak tile', 'tile', 'custom phrase', 'sentence', 'builder'],
-        patterns: [/\b(board|tile|phrases?|sentence)\b/i],
-        question: 'How do I use the Communication Board?',
-        answer: 'Select any category (Basic, Health, Food, Emotions, Emergency, Custom) and tap a tile to speak it aloud. You can tap multiple tiles to chain them in the Sentence Builder Bar, long-press a tile to favorite it, drag to reorder, or add custom phrases that sync automatically.',
-        suggestions: ['How to add custom phrases?', 'Can I reorder tiles?', 'How do I clear the sentence builder?']
+        keywords: ['board', 'communication board', 'emoji', 'phrase', 'speak tile', 'tile', 'custom phrase', 'sentence', 'builder', 'offline board'],
+        patterns: [/\b(board|tile|phrases?|sentence|builder)\b/i],
+        question: 'How do I use the Interactive Communication Board?',
+        answer: 'The Communication Board lets you communicate instantly without speaking: 1) Tap any categorized tile (Basic, Health, Food & Water, Emotions, Emergency, Custom) to voice it aloud. 2) Tap multiple tiles to build coherent sentences in the Sentence Builder Bar, then tap "Speak Sentence". 3) Long-press or click favorite to pin frequently used phrases. 4) Tap "+ Add Custom Phrase" to save personalized phrases that persist on your device and work completely offline.',
+        suggestions: ['How to add custom phrases?', 'Can I use the board in Tamil or Telugu?', 'How do I clear the sentence builder?']
     },
     {
         id: 'speech-tools',
-        keywords: ['speech', 'voice', 'microphone', 'mic', 'stt', 'tts', 'listen', 'hear', 'talk', 'sound wave'],
-        patterns: [/\b(speech|microphone|mic|voice|listen|tts|stt|visualizer)\b/i],
-        question: 'How does Two-Way Communication work?',
-        answer: 'Speech-to-Text converts what other people say into live text with an animated sound-wave visualizer and auto-restart resilience. Text-to-Speech allows you to type any message or pick ready tiles, choose voices, adjust rate & pitch, and follow highlighted words in real time.',
-        suggestions: ['Which languages are supported?', 'Can I adjust voice speed?', 'Why did the mic stop?']
+        keywords: ['speech', 'voice', 'microphone', 'mic', 'stt', 'tts', 'listen', 'hear', 'talk', 'sound wave', 'speed', 'pitch'],
+        patterns: [/\b(speech|microphone|mic|voice|listen|tts|stt|visualizer|pitch|speed)\b/i],
+        question: 'How does Two-Way Communication (STT & TTS) work?',
+        answer: 'Two-Way Communication bridges conversations seamlessly: 1) Speech-to-Text listens to the other person speaking, converts words into live text, and visualizes speech energy with a real-time sound-wave canvas. 2) Text-to-Speech allows you to type your thoughts or pick phrases, select from available system voices, customize speed (0.5x to 2x) and pitch, and follow along with word-by-word visual reading highlights.',
+        suggestions: ['Which speech languages are supported?', 'Why did the microphone stop?', 'Can I change the voice accent?']
     },
     {
-        id: 'live-conversation',
-        keywords: ['live', 'conversation', 'captions', 'subtitles', 'room', 'share', 'font size', 'transcript'],
-        patterns: [/\b(live|caption|subtitle|transcript|room|share)\b/i],
-        question: 'How do Live Captions work?',
-        answer: 'Live Captions transcribe ongoing conversations with speaker labels, timestamps, and an adjustable font size (16px to 64px) for comfortable reading. You can pause, copy, download transcripts as .txt, or generate a 4-digit Room Code to share live captions across devices via WebSockets.',
-        suggestions: ['How to share live room?', 'Can I change caption font size?', 'How to download transcripts?']
+        id: 'shake-detection',
+        keywords: ['shake', 'shaking', 'devicemotion', 'motion', 'fall', 'distress', 'shake sensor', 'sensitivity', 'cooldown'],
+        patterns: [/\b(shake|shaking|motion|movement|fall)\b/i],
+        question: 'How does Sudden Shake Detection work?',
+        answer: 'Shake Detection uses the DeviceMotion API to detect vigorous or sudden shaking of your smartphone or tablet—useful if you drop the phone, experience sudden distress, or need urgent attention. You can adjust the sensitivity (Low, Medium, High), test it with the "Test Shake Alert" button, and toggle it on or off. Note: For safety, shaking NEVER automatically triggers SOS; instead, it activates your unified visual flash, alert chime, and vibration.',
+        suggestions: ['Does shake detection send an SOS automatically?', 'How do I test the shake alert?', 'What if my phone does not support motion sensors?']
     },
     {
-        id: 'translation',
-        keywords: ['translate', 'translation', 'language', 'tamil', 'hindi', 'french', 'spanish', 'telugu', 'kannada', 'malayalam', 'bengali', 'arabic', 'german'],
-        patterns: [/\b(translat|language|multilingual)\b/i],
-        question: 'Which languages can I translate between?',
-        answer: 'ConnectPlus supports 10 languages: Tamil (தமிழ்), Hindi (हिन्दी), French (Français), Spanish (Español), Telugu (తెలుగు), Kannada (ಕನ್ನಡ), Malayalam (മലയാളം), Bengali (বাংলা), Arabic (العربية), and German (Deutsch). We auto-detect source text, provide a 500-character limit counter, instant swap, audio playback in the target tongue, and an offline request queue.',
-        suggestions: ['Can I speak translated text?', 'Does translation work offline?', 'How to swap languages?']
+        id: 'noise-detection',
+        keywords: ['noise', 'sound', 'loud', 'decibel', 'alarm', 'siren', 'horn', 'bark', 'cry', 'web audio', 'meter'],
+        patterns: [/\b(noise|loud|sound level|audio sensor|meter|alarm|siren)\b/i],
+        question: 'How does Sudden Loud-Noise Detection work?',
+        answer: 'Loud-Noise Detection monitors ambient sound via the Web Audio API to alert deaf and hard-of-hearing users to sudden loud events (like alarms, shouting, car horns, or sirens). It features an animated live sound-level meter, adjustable sensitivity thresholds (65 dB to 85 dB), and cooldown protection. Privacy Guarantee: All audio is processed purely in temporary memory inside your browser—no audio is ever recorded, stored, or sent over the internet.',
+        suggestions: ['Is my audio recorded or uploaded?', 'How do I adjust noise sensitivity?', 'Can I test the loud noise alert?']
+    },
+    {
+        id: 'unified-alerts',
+        keywords: ['alert', 'alerts', 'flash', 'vibration', 'chime', 'sound', 'sensory', 'settings', 'color', 'duration'],
+        patterns: [/\b(alert|flash|vibrat|chime|sensory|perimeter)\b/i],
+        question: 'What is the Unified Alerts system and how do I configure it?',
+        answer: 'The Unified Alert system delivers accessible sensory alerts when speech is detected, a shake occurs, a loud noise is heard, or an SOS is triggered: 1) Glowing perimeter flash around the screen with selectable colors (Cyan, Amber, Green, Pink, Red) and duration. 2) Web Audio alert chime with independent on/off toggle. 3) Haptic vibration on supported devices with separate on/off toggle. 4) Large, high-contrast translated warning banners that respect your selected language.',
+        suggestions: ['How to change alert flash color?', 'Can I turn off sound alerts and keep vibration only?', 'How to test unified alerts?']
     },
     {
         id: 'emergency-sos',
-        keywords: ['sos', 'emergency', 'help', 'danger', 'whatsapp', 'sms', 'location', 'gps', 'trusted contact'],
-        patterns: [/\b(sos|emergency|doctor|police|danger|urgent)\b/i],
-        question: 'How does the Emergency SOS system work?',
-        answer: 'Pressing the Emergency SOS button triggers a safety-conscious 3-second countdown (with cancel option). Upon confirmation, it sends customized emergency messages to up to 3 trusted contacts via WhatsApp or SMS, optionally attaching a precise Google Maps geolocation link with your explicit consent.',
-        suggestions: ['Is my phone number stored?', 'How to add trusted contacts?', 'What if I have no internet for SOS?']
+        keywords: ['sos', 'emergency', 'sms', 'gateway', 'trusted contact', 'primary', 'gps', 'location', 'whatsapp', 'cancel', 'duplicate'],
+        patterns: [/\b(sos|emergency|sms|contact|primary contact|gateway|twilio)\b/i],
+        question: 'How does Emergency SOS SMS dispatch work?',
+        answer: 'Emergency SOS is engineered for reliability, safety, and privacy: 1) Save trusted emergency contacts with phone validation and designate a Primary Contact. Phone numbers are stored securely with client-side obfuscation. 2) Tapping SOS opens a confirmation dialog showing the recipient, your name (if provided), message preview, and GPS location status. 3) When confirmed, the secure backend dispatches an SMS via an SMS Gateway (such as Twilio). 4) If no gateway is configured on the server, the app clearly explains that no automated SMS was sent and provides a direct "sms:" link and WhatsApp button with the pre-filled emergency text and Google Maps link.',
+        suggestions: ['What happens if no SMS gateway is configured?', 'How to set a primary emergency contact?', 'How to cancel an SOS in progress?']
     },
     {
-        id: 'privacy-data',
-        keywords: ['privacy', 'data', 'stored', 'safe', 'secure', 'consent', 'tracking', 'server'],
-        patterns: [/\b(priva(cy|te)|security|store(d)?|data|track(ing)?)\b/i],
-        question: 'Is my personal data or voice stored?',
-        answer: 'Your privacy is paramount. ConnectPlus adheres to Privacy by Design: your voice is processed entirely in the browser using the Web Speech API and is never recorded or uploaded. Phone numbers are kept solely on your device and never stored in plain text on servers. Custom phrases use anonymous local device IDs without tracking.',
-        suggestions: ['How to clear my saved data?', 'What is anonymous device ID?', 'Is ConnectPlus free?']
+        id: 'languages-localization',
+        keywords: ['language', 'languages', 'tamil', 'telugu', 'malayalam', 'kannada', 'english', 'script', 'native', 'switch'],
+        patterns: [/\b(languag|tamil|telugu|malayalam|kannada|translation|script)\b/i],
+        question: 'Which languages are supported and how do I switch?',
+        answer: 'ConnectPlus natively supports 5 Indian languages: English (en-IN), Tamil (ta-IN / தமிழ்), Telugu (te-IN / తెలుగు), Malayalam (ml-IN / മലയാളം), and Kannada (kn-IN / ಕನ್ನಡ). Switching languages from the header dropdown updates all buttons, labels, alerts, communication board tiles, and default SOS messages instantly without reloading the page. Speech recognition and text-to-speech automatically adapt to your chosen language.',
+        suggestions: ['Does switching language reload the page?', 'Are board tiles translated too?', 'How do I translate arbitrary text?']
     },
     {
-        id: 'offline-pwa',
-        keywords: ['offline', 'internet', 'install', 'pwa', 'app', 'download', 'cache'],
-        patterns: [/\b(offline|install|pwa|internet|cache)\b/i],
-        question: 'Can ConnectPlus be used offline or installed as an app?',
-        answer: 'Yes! ConnectPlus is a progressive web app (PWA). You can click "Install App" in the navigation bar to install it on your Android, iOS, Windows, or Mac device. The Communication Board, Text-to-Speech, Visual Alerts, and SOS drafting work fully offline.',
-        suggestions: ['How to install on phone?', 'Does speech work offline?', 'How does offline queueing work?']
+        id: 'live-conversation',
+        keywords: ['live', 'conversation', 'captions', 'subtitles', 'room', 'share', 'font size', 'transcript', 'download'],
+        patterns: [/\b(live|caption|subtitle|transcript|room|share)\b/i],
+        question: 'How do Live Captions and Room Sharing work?',
+        answer: 'Live Captions transcribe conversations with speaker labels, timestamps, and an adjustable font size slider (16px to 64px) for optimal reading comfort. You can pause the feed, copy text, download transcripts as a .txt file, or generate a 4-letter Room Code to broadcast live captions to friends or colleagues in real time over WebSockets.',
+        suggestions: ['How to share a live caption room code?', 'Can I adjust font size for captions?', 'How to download the transcript?']
     },
     {
-        id: 'visual-alerts',
-        keywords: ['visual', 'notification', 'flash', 'vibration', 'alert', 'light', 'vibrate'],
-        patterns: [/\b(visual|alert|flash|vibrat|notification)\b/i],
-        question: 'What are Visual Notifications and how do they help?',
-        answer: 'Visual Notifications provide sensory cues for deaf and hard-of-hearing users by flashing the screen perimeter with glowing borders, displaying prominent toast banners, and triggering haptic vibration. You can configure flash color, intensity, and duration in the settings panel.',
-        suggestions: ['How to test visual alert?', 'Can I change flash color?', 'Does vibration work on PC?']
+        id: 'privacy-offline',
+        keywords: ['privacy', 'offline', 'pwa', 'install', 'cache', 'data', 'safe', 'secure', 'encrypted'],
+        patterns: [/\b(priva(cy|te)|offline|pwa|install|cache|security|data)\b/i],
+        question: 'Is ConnectPlus secure and can it be used offline?',
+        answer: 'Yes! ConnectPlus follows rigorous Privacy by Design: 1) Microphone audio is processed entirely on your device and never uploaded. 2) Emergency contacts and phone numbers are encrypted/obfuscated before saving and never stored in plain text. 3) ConnectPlus is a Progressive Web App (PWA) with a Service Worker: you can install it on your device and use the Communication Board, TTS, Shake Sensor, Noise Meter, and SOS drafting completely offline.',
+        suggestions: ['How do I install ConnectPlus on my phone?', 'What works offline?', 'Where are my emergency contacts stored?']
     },
     {
         id: 'keyboard-accessibility',
-        keywords: ['keyboard', 'shortcuts', 'accessibility', 'a11y', 'screen reader', 'contrast', 'wcag'],
-        patterns: [/\b(keyboard|shortcut|screen reader|accessibility|contrast|wcag)\b/i],
-        question: 'What accessibility features and keyboard shortcuts are available?',
-        answer: 'ConnectPlus meets WCAG 2.2 AA standards with 44px+ touch targets, skip links, ARIA live announcements, high-contrast themes, and keyboard shortcuts: Alt+M (toggle Speech-to-Text), Alt+B (jump to Board), Alt+L (Live Captions), Alt+T (cycle Themes), Alt+S (Emergency SOS), and ? (open Shortcuts modal).',
-        suggestions: ['Show all keyboard shortcuts', 'How to toggle High Contrast?', 'How do screen readers work with ConnectPlus?']
+        keywords: ['keyboard', 'shortcuts', 'accessibility', 'a11y', 'screen reader', 'contrast', 'wcag', 'high contrast'],
+        patterns: [/\b(keyboard|shortcut|screen reader|accessibility|contrast|wcag|help)\b/i],
+        question: 'What accessibility features and keyboard shortcuts are built in?',
+        answer: 'ConnectPlus complies with WCAG 2.2 AA standards: large touch targets (44px+), visible focus rings, ARIA live announcements, screen reader labels, reduced-motion compatibility, and high-contrast themes. Keyboard shortcuts include: Alt+M (Toggle Speech-to-Text), Alt+B (Jump to Board), Alt+L (Jump to Live Captions), Alt+T (Cycle Theme: Light/Dark/High Contrast), Alt+S (Emergency SOS), ? (Open Shortcuts Help), and Esc (Close modal).',
+        suggestions: ['How to toggle High Contrast theme?', 'Show all keyboard shortcuts', 'Does it support screen readers?']
     }
 ];
 export function matchFAQ(query) {
@@ -92,7 +100,7 @@ export function matchFAQ(query) {
         // Pattern regex matching
         for (const pattern of item.patterns) {
             if (pattern.test(normalized)) {
-                score += 4;
+                score += 5;
             }
         }
         // Keyword matching

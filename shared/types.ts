@@ -28,21 +28,29 @@ export interface SOSContact {
   id: string;
   name: string;
   phone: string;
+  isPrimary?: boolean;
 }
 
 export interface SOSRequest {
   phone: string;
   message: string;
+  userName?: string;
   lat?: number;
   lng?: number;
 }
 
 export interface SOSResponse {
   success: boolean;
+  smsSent: boolean;
+  reason?: 'NO_GATEWAY_CONFIGURED' | 'PROVIDER_ERROR' | 'INVALID_INPUT' | 'RATE_LIMITED';
+  messageId?: string;
+  provider?: string;
+  error?: string;
   waUrl: string;
   smsUrl: string;
   message: string;
   phoneMasked: string;
+  preparedMessage?: string;
 }
 
 export interface PhraseItem {

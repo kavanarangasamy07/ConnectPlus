@@ -1,42 +1,15 @@
 import { PhraseItem } from '../../shared/types.js';
+import { LOCALIZED_BOARD_TILES, getSpeechLangCode } from '../translations.js';
 import { tts } from './ttsController.js';
 import { showToast } from './toastController.js';
 
-const DEFAULT_PHRASES: PhraseItem[] = [
-  // Basic
-  { id: 'b1', emoji: '👋', phrase: 'Hello!', category: 'basic', order: 0 },
-  { id: 'b2', emoji: '🙏', phrase: 'Thank you.', category: 'basic', order: 1 },
-  { id: 'b3', emoji: '✅', phrase: 'Yes.', category: 'basic', order: 2 },
-  { id: 'b4', emoji: '❌', phrase: 'No.', category: 'basic', order: 3 },
-  { id: 'b5', emoji: '❓', phrase: 'I do not understand.', category: 'basic', order: 4 },
-  { id: 'b6', emoji: '🗣️', phrase: 'Please speak slowly.', category: 'basic', order: 5 },
-  // Health
-  { id: 'h1', emoji: '🩺', phrase: 'I need a doctor.', category: 'health', order: 0 },
-  { id: 'h2', emoji: '🤒', phrase: 'I am feeling sick.', category: 'health', order: 1 },
-  { id: 'h3', emoji: '💊', phrase: 'I need my medicine.', category: 'health', order: 2 },
-  { id: 'h4', emoji: '🩹', phrase: 'I am in pain.', category: 'health', order: 3 },
-  // Food and Water
-  { id: 'f1', emoji: '💧', phrase: 'I need water.', category: 'food', order: 0 },
-  { id: 'f2', emoji: '🍎', phrase: 'I need food.', category: 'food', order: 1 },
-  { id: 'f3', emoji: '☕', phrase: 'I would like tea or coffee.', category: 'food', order: 2 },
-  { id: 'f4', emoji: '🚻', phrase: 'I need to go to the washroom.', category: 'food', order: 3 },
-  // Emotions
-  { id: 'e1', emoji: '😊', phrase: 'I am happy.', category: 'emotions', order: 0 },
-  { id: 'e2', emoji: '😔', phrase: 'I am sad.', category: 'emotions', order: 1 },
-  { id: 'e3', emoji: '😟', phrase: 'I feel anxious.', category: 'emotions', order: 2 },
-  { id: 'e4', emoji: '😴', phrase: 'I am tired.', category: 'emotions', order: 3 },
-  // Emergency
-  { id: 'em1', emoji: '🆘', phrase: 'Please help me immediately!', category: 'emergency', order: 0 },
-  { id: 'em2', emoji: '📞', phrase: 'Please call my emergency contact.', category: 'emergency', order: 1 },
-  { id: 'em3', emoji: '🚨', phrase: 'There is an emergency here.', category: 'emergency', order: 2 }
-];
-
 export class BoardController {
   private phrases: PhraseItem[] = [];
-  private activeCategory: string = 'all';
-  private searchQuery: string = '';
+  private activeCategory = 'all';
+  private searchQuery = '';
   private sentenceBuilder: PhraseItem[] = [];
   private deviceId: string;
+  private currentLang = 'en';
   private containerEl: HTMLElement | null = null;
   private sentenceChipsEl: HTMLElement | null = null;
 
@@ -52,6 +25,26 @@ export class BoardController {
     this.syncWithBackend();
   }
 
+  public setLanguage(lang: string): void {
+    this.currentLang = lang;
+    const localizedPresets = (LOCALIZED_BOARD_TILES as any)[lang] || LOCALIZED_BOARD_TILES.en;
+
+    // Track existing favorites
+    const favSet = new Set(this.phrases.filter((p) => p.favorite).map((p) => p.id));
+    // Keep custom phrases
+    const customPhrases = this.phrases.filter((p) => p.id.startsWith('cust-'));
+
+    // Map localized presets with favorite state
+    const updatedPresets: PhraseItem[] = localizedPresets.map((preset: PhraseItem) => ({
+      ...preset,
+      favorite: favSet.has(preset.id)
+    }));
+
+    this.phrases = [...updatedPresets, ...customPhrases];
+    this.saveLocal();
+    this.render();
+  }
+
   public setCategory(cat: string): void {
     this.activeCategory = cat;
     this.render();
@@ -65,8 +58,9 @@ export class BoardController {
   public addTileToSentence(phrase: PhraseItem): void {
     this.sentenceBuilder.push(phrase);
     this.renderSentenceBuilder();
-    // Also speak individual tile upon selection
-    tts.speak(phrase.phrase);
+    // Speak individual tile in current language
+    const speechCode = getSpeechLangCode(this.currentLang);
+    tts.speak(phrase.phrase, speechCode);
   }
 
   public removeTileFromSentence(index: number): void {
@@ -80,7 +74,8 @@ export class BoardController {
       return;
     }
     const fullSentence = this.sentenceBuilder.map((p) => p.phrase).join(' ');
-    tts.speak(fullSentence);
+    const speechCode = getSpeechLangCode(this.currentLang);
+    tts.speak(fullSentence, speechCode);
   }
 
   public clearSentence(): void {
@@ -173,7 +168,6 @@ export class BoardController {
         <span class="tile-text">${escapeHtml(item.phrase)}</span>
       `;
 
-      // Tap on tile
       tile.onclick = (e) => {
         if ((e.target as HTMLElement).classList.contains('tile-fav-btn')) {
           e.stopPropagation();
@@ -183,7 +177,6 @@ export class BoardController {
         this.addTileToSentence(item);
       };
 
-      // Keyboard accessible Enter / Space
       tile.onkeydown = (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -200,7 +193,7 @@ export class BoardController {
     this.sentenceChipsEl.innerHTML = '';
 
     if (this.sentenceBuilder.length === 0) {
-      this.sentenceChipsEl.innerHTML = `<span style="color: var(--text-muted); font-size: 0.95rem;">Tap tiles to build a complete sentence here...</span>`;
+      this.sentenceChipsEl.innerHTML = `<span style="color: var(--text-muted); font-size: 0.95rem;">Tap phrase tiles above to build a sentence here...</span>`;
       return;
     }
 
@@ -235,7 +228,8 @@ export class BoardController {
         return;
       } catch {}
     }
-    this.phrases = [...DEFAULT_PHRASES];
+    const presets = (LOCALIZED_BOARD_TILES as any)[this.currentLang] || LOCALIZED_BOARD_TILES.en;
+    this.phrases = [...presets];
     this.saveLocal();
   }
 
@@ -251,7 +245,6 @@ export class BoardController {
       if (res.ok) {
         const data = (await res.json()) as { phrases: PhraseItem[] };
         if (data.phrases && data.phrases.length > 0) {
-          // Merge unique phrases
           const existingIds = new Set(this.phrases.map((p) => p.id));
           data.phrases.forEach((remote) => {
             if (!existingIds.has(remote.id)) {

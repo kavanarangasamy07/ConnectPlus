@@ -4,6 +4,7 @@ import './styles/components.css';
 import './styles/themes.css';
 
 import { themeCtrl } from './modules/themeController.js';
+import { langCtrl } from './modules/languageController.js';
 import { SpeechController } from './modules/speechController.js';
 import { tts } from './modules/ttsController.js';
 import { BoardController } from './modules/boardController.js';
@@ -11,22 +12,30 @@ import { LiveConversationController } from './modules/liveConversation.js';
 import { TranslationController } from './modules/translationController.js';
 import { SOSController } from './modules/sosController.js';
 import { AssistantController } from './modules/assistantController.js';
-import { triggerVisualAlert, saveAlertSettings, loadAlertSettings } from './modules/visualAlerts.js';
+import { unifiedAlerts } from './modules/unifiedAlerts.js';
+import { ShakeDetector } from './modules/shakeDetector.js';
+import { NoiseDetector } from './modules/noiseDetector.js';
 import { KeyboardShortcutsManager } from './modules/keyboardShortcuts.js';
 import { initPWA } from './modules/pwaInstall.js';
 import { showToast } from './modules/toastController.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Theme Controller
+  // 1. Language Controller (instant switching without reload)
+  const langSelect = document.getElementById('globalLangSelect') as HTMLSelectElement | null;
+  if (langSelect) {
+    langCtrl.init(langSelect);
+  }
+
+  // 2. Theme Controller
   const themeBtn = document.getElementById('themeToggleBtn');
   if (themeBtn) {
     themeCtrl.init(themeBtn);
   }
 
-  // 2. Navigation smooth scroll and active highlighting
+  // 3. Navigation smooth scroll and active highlighting
   initNavigation();
 
-  // 3. Feature 1: Two-Way Communication
+  // 4. Feature 1: Two-Way Communication (STT & TTS)
   const speechStatusEl = document.getElementById('speechStatus');
   const speechResultEl = document.getElementById('speechResult');
   const speechCanvasEl = document.getElementById('speechVisualizerCanvas') as HTMLCanvasElement;
@@ -36,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     statusEl: speechStatusEl,
     outputEl: speechResultEl,
     canvasEl: speechCanvasEl,
-    lang: speechLangSelect ? speechLangSelect.value : 'en-IN',
+    lang: speechLangSelect ? speechLangSelect.value : langCtrl.getSpeechCode(),
     onStateChange: (state) => {
       const badge = document.getElementById('speechMicBadge');
       if (badge) {
@@ -47,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   if (speechLangSelect) {
+    speechLangSelect.value = langCtrl.getSpeechCode();
     speechLangSelect.addEventListener('change', () => {
       twoWaySpeech.setLanguage(speechLangSelect.value);
     });
@@ -69,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const ttsPitchSlider = document.getElementById('ttsPitchSlider') as HTMLInputElement;
   const readingHighlightContainer = document.getElementById('ttsReadingHighlight');
 
-  // Populate voices once available
   function populateVoices() {
     if (!ttsVoiceSelect) return;
     const voices = tts.getVoices();
@@ -102,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   speakTextBtn?.addEventListener('click', () => {
     if (ttsMessageInput) {
-      tts.speak(ttsMessageInput.value, 'en-IN', readingHighlightContainer);
+      tts.speak(ttsMessageInput.value, langCtrl.getSpeechCode(), readingHighlightContainer);
     }
   });
 
@@ -110,15 +119,16 @@ document.addEventListener('DOMContentLoaded', () => {
     tts.stop();
   });
 
-  // 4. Feature 2: Communication Board
+  // 5. Feature 2: Interactive Communication Board
   const boardTilesContainer = document.getElementById('boardTilesContainer');
   const sentenceChipsContainer = document.getElementById('sentenceChipsContainer');
   const boardController = new BoardController();
 
   if (boardTilesContainer && sentenceChipsContainer) {
     boardController.init(boardTilesContainer, sentenceChipsContainer);
+    boardController.setLanguage(langCtrl.getLanguage());
 
-    // Categories
+    // Category Tabs
     document.querySelectorAll('.category-tab-btn').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.category-tab-btn').forEach((b) => b.classList.remove('active'));
@@ -143,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
       boardController.clearSentence();
     });
 
-    // Add custom phrase modal
+    // Custom phrase modal
     const addPhraseModal = document.getElementById('addPhraseModal');
     document.getElementById('openAddPhraseModalBtn')?.addEventListener('click', () => {
       if (addPhraseModal) addPhraseModal.style.display = 'flex';
@@ -166,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Feature 3: Live Conversation
+  // 6. Feature 3: Live Conversation Captions
   const liveViewport = document.getElementById('liveCaptionsViewport');
   const liveFontSizeSlider = document.getElementById('liveFontSizeSlider') as HTMLInputElement;
   const liveFontSizeVal = document.getElementById('liveFontSizeVal');
@@ -181,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleLiveBtn?.addEventListener('click', () => {
       const isListening = liveConversation.toggleListening();
       toggleLiveBtn.textContent = isListening ? '⏹️ Stop Conversation' : '🎤 Start Conversation';
-      toggleLiveBtn.className = isListening ? 'btn-danger' : '';
+      toggleLiveBtn.className = isListening ? 'btn-danger' : 'btn';
     });
 
     document.getElementById('pauseLiveBtn')?.addEventListener('click', (e) => {
@@ -201,20 +211,17 @@ document.addEventListener('DOMContentLoaded', () => {
       liveConversation.clear();
     });
 
-    // Speaker change
     const speakerSelect = document.getElementById('liveSpeakerSelect') as HTMLSelectElement;
     speakerSelect?.addEventListener('change', () => {
       liveConversation.setSpeaker(speakerSelect.value);
     });
 
-    // Room Code Join
     const joinRoomBtn = document.getElementById('joinLiveRoomBtn');
     const roomCodeInput = document.getElementById('liveRoomCodeInput') as HTMLInputElement;
     joinRoomBtn?.addEventListener('click', () => {
       if (roomCodeInput && roomCodeInput.value.trim()) {
         liveConversation.joinRoom(roomCodeInput.value.trim());
       } else {
-        // Generate random 4-letter room code
         const code = Math.random().toString(36).substring(2, 6).toUpperCase();
         if (roomCodeInput) roomCodeInput.value = code;
         liveConversation.joinRoom(code);
@@ -222,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 6. Feature 4: Translation
+  // 7. Feature 4: Translation
   const transInput = document.getElementById('translateInput') as HTMLTextAreaElement;
   const transOutput = document.getElementById('translationResult');
   const transTarget = document.getElementById('targetLanguage') as HTMLSelectElement;
@@ -240,62 +247,198 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('copyTranslationBtn')?.addEventListener('click', () => translationCtrl.copyTranslation());
   }
 
-  // 7. Feature 5: Visual Notifications & Settings
-  const alertSettings = loadAlertSettings();
+  // 8. Feature 5: Unified Alerts & Sensory Settings
+  const alertSettings = unifiedAlerts.getSettings();
   const alertColorSelect = document.getElementById('alertColorSelect') as HTMLSelectElement;
   const alertDurationSelect = document.getElementById('alertDurationSelect') as HTMLSelectElement;
+  const alertSoundToggle = document.getElementById('alertSoundToggle') as HTMLInputElement;
+  const alertVibrationToggle = document.getElementById('alertVibrationToggle') as HTMLInputElement;
 
-  if (alertColorSelect) alertColorSelect.value = alertSettings.color;
-  if (alertDurationSelect) alertDurationSelect.value = alertSettings.duration.toString();
+  if (alertColorSelect) alertColorSelect.value = alertSettings.flashColor;
+  if (alertDurationSelect) alertDurationSelect.value = alertSettings.flashDuration.toString();
+  if (alertSoundToggle) alertSoundToggle.checked = alertSettings.soundEnabled;
+  if (alertVibrationToggle) alertVibrationToggle.checked = alertSettings.vibrationEnabled;
 
   alertColorSelect?.addEventListener('change', () => {
-    saveAlertSettings({ color: alertColorSelect.value });
+    unifiedAlerts.saveSettings({ flashColor: alertColorSelect.value });
   });
 
   alertDurationSelect?.addEventListener('change', () => {
-    saveAlertSettings({ duration: parseFloat(alertDurationSelect.value) });
+    unifiedAlerts.saveSettings({ flashDuration: parseFloat(alertDurationSelect.value) });
+  });
+
+  alertSoundToggle?.addEventListener('change', () => {
+    unifiedAlerts.saveSettings({ soundEnabled: alertSoundToggle.checked });
+    showToast(alertSoundToggle.checked ? 'Alert sound enabled' : 'Alert sound muted', 'info');
+  });
+
+  alertVibrationToggle?.addEventListener('change', () => {
+    unifiedAlerts.saveSettings({ vibrationEnabled: alertVibrationToggle.checked });
+    showToast(alertVibrationToggle.checked ? 'Alert vibration enabled' : 'Alert vibration disabled', 'info');
   });
 
   document.getElementById('testAlertBtn')?.addEventListener('click', () => {
-    triggerVisualAlert('test');
+    unifiedAlerts.triggerAlert({
+      type: 'test',
+      title: 'UNIFIED ALERT TEST',
+      message: '🔔 Unified visual flash, chime tone, and vibration test successful!',
+      duration: 1.2
+    });
   });
 
-  // 8. Feature 6: Emergency SOS
+  // 9. Feature 6: Sudden Shake & Loud-Noise Detection Sensors
+  const shakeStatusText = document.getElementById('shakeStatusText');
+  const shakeDetector = new ShakeDetector({
+    statusEl: shakeStatusText,
+    getAlertMessage: () => langCtrl.translate('alert_shake_banner')
+  });
+
+  const shakeToggle = document.getElementById('shakeEnableToggle') as HTMLInputElement;
+  const shakeSensSelect = document.getElementById('shakeSensitivitySelect') as HTMLSelectElement;
+
+  if (shakeToggle) {
+    shakeToggle.checked = shakeDetector.getIsEnabled();
+    shakeToggle.addEventListener('change', async () => {
+      await shakeDetector.setEnabled(shakeToggle.checked);
+      shakeToggle.checked = shakeDetector.getIsEnabled();
+    });
+  }
+
+  if (shakeSensSelect) {
+    shakeSensSelect.value = shakeDetector.getSensitivity();
+    shakeSensSelect.addEventListener('change', () => {
+      shakeDetector.setSensitivity(shakeSensSelect.value as any);
+    });
+  }
+
+  document.getElementById('testShakeBtn')?.addEventListener('click', () => {
+    shakeDetector.testShake();
+  });
+
+  // Sudden Loud-Noise Detector
+  const noiseStatusText = document.getElementById('noiseStatusText');
+  const noiseMeterFill = document.getElementById('noiseMeterFill');
+  const noiseMeterVal = document.getElementById('noiseMeterVal');
+
+  const noiseDetector = new NoiseDetector({
+    statusEl: noiseStatusText,
+    meterBarEl: noiseMeterFill,
+    meterValueEl: noiseMeterVal,
+    getAlertMessage: () => langCtrl.translate('alert_noise_banner')
+  });
+
+  const noiseToggle = document.getElementById('noiseEnableToggle') as HTMLInputElement;
+  const noiseSensSelect = document.getElementById('noiseSensitivitySelect') as HTMLSelectElement;
+
+  if (noiseToggle) {
+    noiseToggle.checked = noiseDetector.getIsEnabled();
+    noiseToggle.addEventListener('change', async () => {
+      await noiseDetector.setEnabled(noiseToggle.checked);
+      noiseToggle.checked = noiseDetector.getIsEnabled();
+    });
+  }
+
+  if (noiseSensSelect) {
+    noiseSensSelect.value = noiseDetector.getSensitivity();
+    noiseSensSelect.addEventListener('change', () => {
+      noiseDetector.setSensitivity(noiseSensSelect.value as any);
+    });
+  }
+
+  document.getElementById('testNoiseBtn')?.addEventListener('click', () => {
+    noiseDetector.testNoise();
+  });
+
+  // 10. Feature 7: Emergency SOS SMS Controller
+  const sosUserNameInput = document.getElementById('sosUserName') as HTMLInputElement;
   const sosPhoneInput = document.getElementById('sosPhone') as HTMLInputElement;
   const sosMessageInput = document.getElementById('sosText') as HTMLTextAreaElement;
+  const sosLocationConsentCheck = document.getElementById('sosLocationConsent') as HTMLInputElement;
   const sosContactsList = document.getElementById('sosContactsList');
   const sosStatusEl = document.getElementById('sosStatus');
+  const sosConfirmModal = document.getElementById('sosConfirmModal');
   const sosCountdownModal = document.getElementById('sosCountdownModal');
   const sosCountdownCircle = document.getElementById('sosCountdownCircle');
 
   const sosCtrl = new SOSController();
-  if (sosPhoneInput && sosMessageInput && sosContactsList && sosStatusEl && sosCountdownModal && sosCountdownCircle) {
-    sosCtrl.init(sosPhoneInput, sosMessageInput, sosContactsList, sosStatusEl, sosCountdownModal, sosCountdownCircle);
+  sosCtrl.init({
+    userNameInput: sosUserNameInput,
+    phoneInput: sosPhoneInput,
+    messageInput: sosMessageInput,
+    locationConsentCheck: sosLocationConsentCheck,
+    contactsListEl: sosContactsList,
+    statusEl: sosStatusEl,
+    confirmModal: sosConfirmModal,
+    countdownModal: sosCountdownModal,
+    countdownCircle: sosCountdownCircle
+  });
 
-    document.getElementById('triggerSOSBtn')?.addEventListener('click', () => {
-      sosCtrl.triggerSOS();
-    });
+  // Track user edits on SOS message so language switcher doesn't overwrite custom message
+  sosMessageInput?.addEventListener('input', () => {
+    sosMessageInput.dataset.userEdited = 'true';
+  });
 
-    document.getElementById('cancelSOSBtn')?.addEventListener('click', () => {
-      sosCtrl.cancelCountdown();
-    });
+  // Trigger SOS -> Open Confirmation Dialog
+  document.getElementById('triggerSOSBtn')?.addEventListener('click', () => {
+    sosCtrl.openConfirmationDialog();
+  });
 
-    const locationConsentCheck = document.getElementById('sosLocationConsent') as HTMLInputElement;
-    locationConsentCheck?.addEventListener('change', () => {
-      sosCtrl.setLocationConsent(locationConsentCheck.checked);
-    });
+  // Confirmation Modal actions
+  document.getElementById('confirmSendSOSBtn')?.addEventListener('click', () => {
+    sosCtrl.confirmAndStartCountdown();
+  });
 
-    document.getElementById('addTrustedContactBtn')?.addEventListener('click', () => {
-      const name = prompt('Enter trusted contact name:');
-      if (!name) return;
-      const phone = prompt('Enter contact WhatsApp number with country code (e.g. +91 9876543210):');
-      if (phone) {
-        sosCtrl.addContact(name, phone);
-      }
-    });
-  }
+  document.getElementById('cancelConfirmSOSBtn')?.addEventListener('click', () => {
+    sosCtrl.closeConfirmationDialog();
+  });
 
-  // 9. Feature 7: AI Assistant
+  // Countdown Modal Cancel
+  document.getElementById('cancelSOSCountdownBtn')?.addEventListener('click', () => {
+    sosCtrl.cancelCountdown();
+  });
+
+  // Location Consent
+  sosLocationConsentCheck?.addEventListener('change', () => {
+    sosCtrl.setLocationConsent(sosLocationConsentCheck.checked);
+  });
+
+  // Add Contact Modal
+  const addContactModal = document.getElementById('addContactModal');
+  const newContactName = document.getElementById('newContactName') as HTMLInputElement;
+  const newContactPhone = document.getElementById('newContactPhone') as HTMLInputElement;
+  const newContactIsPrimary = document.getElementById('newContactIsPrimary') as HTMLInputElement;
+
+  document.getElementById('openAddContactModalBtn')?.addEventListener('click', () => {
+    if (addContactModal) {
+      if (newContactName) newContactName.value = '';
+      if (newContactPhone) newContactPhone.value = '';
+      if (newContactIsPrimary) newContactIsPrimary.checked = sosCtrl.getContacts().length === 0;
+      addContactModal.style.display = 'flex';
+      newContactName?.focus();
+    }
+  });
+
+  document.getElementById('cancelAddContactBtn')?.addEventListener('click', () => {
+    if (addContactModal) addContactModal.style.display = 'none';
+  });
+
+  document.getElementById('saveAddContactBtn')?.addEventListener('click', () => {
+    const name = newContactName?.value.trim() || 'Emergency Contact';
+    const phone = newContactPhone?.value.trim() || '';
+    const isPrimary = newContactIsPrimary?.checked || false;
+
+    if (!phone) {
+      showToast('Please enter an emergency phone number.', 'danger');
+      return;
+    }
+
+    const success = sosCtrl.addContact(name, phone, isPrimary);
+    if (success && addContactModal) {
+      addContactModal.style.display = 'none';
+    }
+  });
+
+  // 11. Feature 8: AI Personal Assistant
   const chatMessages = document.getElementById('chatMessages');
   const chatChips = document.getElementById('chatChips');
   const chatInput = document.getElementById('chatInput') as HTMLInputElement;
@@ -307,7 +450,16 @@ document.addEventListener('DOMContentLoaded', () => {
     assistantCtrl.init(chatMessages, chatChips, chatInput, chatSendBtn, chatMicBtn);
   }
 
-  // 10. Keyboard Shortcuts Manager
+  // 12. Connect Language Controller to update modules
+  langCtrl.onLanguageChange((lang, speechCode) => {
+    boardController.setLanguage(lang);
+    twoWaySpeech.setLanguage(speechCode);
+    if (speechLangSelect) {
+      speechLangSelect.value = speechCode;
+    }
+  });
+
+  // 13. Keyboard Shortcuts Manager
   const shortcutsMgr = new KeyboardShortcutsManager();
   shortcutsMgr.init({
     onToggleSTT: () => {
@@ -318,27 +470,39 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     },
     onTriggerSOS: () => {
-      sosCtrl.triggerSOS();
+      sosCtrl.openConfirmationDialog();
     }
   });
 
   document.getElementById('openShortcutsModalBtn')?.addEventListener('click', () => {
     shortcutsMgr.openModal();
   });
+  document.getElementById('closeShortcutsBtn')?.addEventListener('click', () => {
+    shortcutsMgr.closeModal();
+  });
 
-  // 11. PWA & Offline init
+  // 14. PWA Installation & Service Worker
   initPWA();
+
+  // 15. Initial Loading Screen smooth fadeout
+  const loadingScreen = document.getElementById('appLoadingScreen');
+  if (loadingScreen) {
+    setTimeout(() => {
+      loadingScreen.classList.add('fade-out');
+      setTimeout(() => {
+        loadingScreen.style.display = 'none';
+      }, 400);
+    }, 350);
+  }
 });
 
 function initNavigation() {
-  // Mobile drawer toggle
   const menuBtn = document.getElementById('menuToggleBtn');
   const navLinks = document.getElementById('navLinks');
   menuBtn?.addEventListener('click', () => {
     navLinks?.classList.toggle('mobile-open');
   });
 
-  // Smooth scroll links with null safety
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener('click', (e) => {
       const href = anchor.getAttribute('href');
@@ -348,18 +512,26 @@ function initNavigation() {
         e.preventDefault();
         navLinks?.classList.remove('mobile-open');
         target.scrollIntoView({ behavior: 'smooth' });
+
+        // Update active class immediately on click
+        document.querySelectorAll('.nav-link, .mobile-nav-link').forEach((link) => {
+          if (link.getAttribute('href') === href) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
       }
     });
   });
 
-  // Active section observer
   const sections = document.querySelectorAll('section[id]');
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const id = entry.target.getAttribute('id');
-          document.querySelectorAll('.nav-link').forEach((link) => {
+          document.querySelectorAll('.nav-link, .mobile-nav-link').forEach((link) => {
             if (link.getAttribute('href') === `#${id}`) {
               link.classList.add('active');
             } else {
@@ -369,7 +541,7 @@ function initNavigation() {
         }
       });
     },
-    { threshold: 0.3 }
+    { threshold: 0.25 }
   );
   sections.forEach((s) => observer.observe(s));
 }

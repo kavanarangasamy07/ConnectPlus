@@ -1,74 +1,180 @@
+import { Router } from 'express';
 import { z } from 'zod';
 import { createHash } from 'node:crypto';
 import { stmts } from '../db.js';
+export const sosRouter = Router();
 const SOSSchema = z.object({
-    phone: z.string().min(8).max(20),
+    phone: z.string().min(1, 'Phone number is required'),
     message: z.string().min(1).max(500),
+    userName: z.string().max(100).optional(),
     lat: z.number().min(-90).max(90).optional(),
     lng: z.number().min(-180).max(180).optional()
 });
 export function sanitizePhone(raw) {
-    // Strip everything except digits and leading +
+    if (!raw)
+        return '';
     const cleaned = raw.trim().replace(/[^\d+]/g, '');
-    // If starts with +, strip + for wa.me / numeric validation
     const digits = cleaned.replace(/\D/g, '');
     return digits;
 }
 export function maskPhone(digits) {
-    if (digits.length <= 4)
+    if (!digits || digits.length <= 4)
         return '****';
     const prefix = digits.slice(0, 2);
     const suffix = digits.slice(-4);
-    const masked = '*'.repeat(Math.max(2, digits.length - 6));
-    return `+${prefix} ${masked} ${suffix}`;
+    const stars = '*'.repeat(Math.max(2, digits.length - 6));
+    return `+${prefix} ${stars} ${suffix}`;
 }
-export async function sosRoute(app) {
-    app.post('/api/v1/sos', {
-        config: {
-            rateLimit: {
-                max: 15,
-                timeWindow: '1 minute'
+// In-memory duplicate request tracker (prevents duplicate dispatches within 20s)
+const recentRequests = new Map();
+function cleanOldRequests() {
+    const now = Date.now();
+    for (const [key, timestamp] of recentRequests.entries()) {
+        if (now - timestamp > 20000) {
+            recentRequests.delete(key);
+        }
+    }
+}
+sosRouter.post('/', async (req, res) => {
+    cleanOldRequests();
+    const parseResult = SOSSchema.safeParse(req.body);
+    if (!parseResult.success) {
+        return res.status(400).json({
+            error: 'Invalid input',
+            details: parseResult.error.issues
+        });
+    }
+    const { phone, message, userName, lat, lng } = parseResult.data;
+    const cleanDigits = sanitizePhone(phone);
+    if (cleanDigits.length < 8 || cleanDigits.length > 15) {
+        return res.status(400).json({
+            error: 'Invalid phone number',
+            message: 'Phone number must be between 8 and 15 digits including country code.'
+        });
+    }
+    // Duplicate request check
+    const dedupeKey = `${cleanDigits}:${message.trim()}:${userName || ''}`;
+    const now = Date.now();
+    if (recentRequests.has(dedupeKey)) {
+        const elapsed = now - recentRequests.get(dedupeKey);
+        if (elapsed < 20000) {
+            return res.status(409).json({
+                error: 'DUPLICATE_REQUEST',
+                message: 'A duplicate SOS dispatch was prevented. Please wait before retrying.',
+                cooldownRemainingMs: 20000 - elapsed
+            });
+        }
+    }
+    recentRequests.set(dedupeKey, now);
+    // Compile final message
+    let finalMessage = '';
+    if (userName && userName.trim()) {
+        finalMessage += `[From: ${userName.trim()}]\n`;
+    }
+    finalMessage += message.trim();
+    if (lat !== undefined && lng !== undefined) {
+        finalMessage += `\n📍 Current Location: https://maps.google.com/?q=${lat.toFixed(6)},${lng.toFixed(6)}`;
+    }
+    const encodedMessage = encodeURIComponent(finalMessage);
+    const waUrl = `https://wa.me/${cleanDigits}?text=${encodedMessage}`;
+    const smsUrl = `sms:${cleanDigits}?body=${encodedMessage}`;
+    // Audit log with SHA-256 hash for privacy
+    const phoneHash = createHash('sha256').update(cleanDigits).digest('hex').slice(0, 16);
+    try {
+        stmts.logSOS.run(phoneHash, now);
+    }
+    catch (err) {
+        console.warn('Could not log SOS audit:', err);
+    }
+    // Check SMS Gateway configuration
+    const twilioSid = process.env.TWILIO_ACCOUNT_SID;
+    const twilioToken = process.env.TWILIO_AUTH_TOKEN;
+    const twilioFrom = process.env.TWILIO_FROM_NUMBER;
+    const genericGatewayUrl = process.env.SMS_GATEWAY_URL;
+    let smsSent = false;
+    let providerMessageId;
+    let providerName;
+    let failureReason;
+    let providerError;
+    if (twilioSid && twilioToken && twilioFrom) {
+        providerName = 'Twilio';
+        try {
+            const authHeader = 'Basic ' + Buffer.from(`${twilioSid}:${twilioToken}`).toString('base64');
+            const bodyParams = new URLSearchParams();
+            bodyParams.append('To', `+${cleanDigits}`);
+            bodyParams.append('From', twilioFrom);
+            bodyParams.append('Body', finalMessage);
+            const twilioRes = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
+                method: 'POST',
+                headers: {
+                    Authorization: authHeader,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: bodyParams.toString()
+            });
+            const twilioData = (await twilioRes.json());
+            if (twilioRes.ok && twilioData && twilioData.sid) {
+                smsSent = true;
+                providerMessageId = twilioData.sid;
+            }
+            else {
+                failureReason = 'PROVIDER_ERROR';
+                providerError = twilioData?.message || `Twilio HTTP ${twilioRes.status}`;
             }
         }
-    }, async (request, reply) => {
-        const parseResult = SOSSchema.safeParse(request.body);
-        if (!parseResult.success) {
-            return reply.status(400).send({
-                error: 'Invalid input',
-                details: parseResult.error.issues
-            });
+        catch (err) {
+            failureReason = 'PROVIDER_ERROR';
+            providerError = err.message || 'Twilio request failed';
         }
-        const { phone, message, lat, lng } = parseResult.data;
-        const cleanDigits = sanitizePhone(phone);
-        // Validate 8 to 15 digits
-        if (cleanDigits.length < 8 || cleanDigits.length > 15) {
-            return reply.status(400).send({
-                error: 'Invalid phone number',
-                message: 'Phone number must be between 8 and 15 digits including country code.'
-            });
-        }
-        let finalMessage = message.trim();
-        if (lat !== undefined && lng !== undefined) {
-            finalMessage += `\n📍 Current Location: https://maps.google.com/?q=${lat.toFixed(6)},${lng.toFixed(6)}`;
-        }
-        const encodedMessage = encodeURIComponent(finalMessage);
-        const waUrl = `https://wa.me/${cleanDigits}?text=${encodedMessage}`;
-        const smsUrl = `sms:${cleanDigits}?body=${encodedMessage}`;
-        // Calculate privacy-safe hash for logging
-        const phoneHash = createHash('sha256').update(cleanDigits).digest('hex').slice(0, 16);
+    }
+    else if (genericGatewayUrl) {
+        providerName = 'CustomGateway';
         try {
-            stmts.logSOS.run(phoneHash, Date.now());
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            if (process.env.SMS_GATEWAY_AUTH_HEADER && process.env.SMS_GATEWAY_AUTH_VALUE) {
+                headers[process.env.SMS_GATEWAY_AUTH_HEADER] = process.env.SMS_GATEWAY_AUTH_VALUE;
+            }
+            const gatewayRes = await fetch(genericGatewayUrl, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({
+                    to: `+${cleanDigits}`,
+                    message: finalMessage,
+                    userName: userName || null
+                })
+            });
+            if (gatewayRes.ok) {
+                const gwData = (await gatewayRes.json().catch(() => ({})));
+                smsSent = true;
+                providerMessageId = gwData?.id || gwData?.messageId || 'gw-' + Date.now();
+            }
+            else {
+                failureReason = 'PROVIDER_ERROR';
+                providerError = `Gateway returned HTTP ${gatewayRes.status}`;
+            }
         }
         catch (err) {
-            request.log.warn({ err }, 'Could not log SOS audit');
+            failureReason = 'PROVIDER_ERROR';
+            providerError = err.message || 'Gateway connection failed';
         }
-        const response = {
-            success: true,
-            waUrl,
-            smsUrl,
-            message: finalMessage,
-            phoneMasked: maskPhone(cleanDigits)
-        };
-        return reply.send(response);
-    });
-}
+    }
+    else {
+        failureReason = 'NO_GATEWAY_CONFIGURED';
+    }
+    const response = {
+        success: smsSent, // true ONLY if SMS gateway accepted request
+        smsSent,
+        reason: failureReason,
+        error: providerError,
+        messageId: providerMessageId,
+        provider: providerName,
+        waUrl,
+        smsUrl,
+        message: finalMessage,
+        preparedMessage: finalMessage,
+        phoneMasked: maskPhone(cleanDigits)
+    };
+    return res.status(smsSent ? 200 : 200).json(response);
+});

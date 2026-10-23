@@ -1,41 +1,96 @@
+/* ==========================================================================
+   ConnectPlus - Theme Overrides (High-Contrast & Dark Mode Refinements)
+   WCAG 2.2 AAA Contrast Compliance
+   ========================================================================== */
+
 /* High-Contrast Mode Refinements (WCAG AAA) */
 body[data-theme='high-contrast'] .card,
 body[data-theme='high-contrast'] .tile-btn,
 body[data-theme='high-contrast'] .sentence-builder-bar,
 body[data-theme='high-contrast'] .chat-window,
-body[data-theme='high-contrast'] .captions-viewport {
+body[data-theme='high-contrast'] .captions-viewport,
+body[data-theme='high-contrast'] .live-captions-box,
+body[data-theme='high-contrast'] .dashboard-card-link,
+body[data-theme='high-contrast'] .dashboard-welcome-banner,
+body[data-theme='high-contrast'] .dashboard-sos-banner,
+body[data-theme='high-contrast'] .hero-preview-window,
+body[data-theme='high-contrast'] .preview-module,
+body[data-theme='high-contrast'] .modal-content,
+body[data-theme='high-contrast'] .sos-confirm-box,
+body[data-theme='high-contrast'] .countdown-card,
+body[data-theme='high-contrast'] .mobile-bottom-nav {
   border: 2px solid #FFFFFF !important;
   box-shadow: none !important;
+  background: #000000 !important;
+  color: #FFFFFF !important;
 }
 
-body[data-theme='high-contrast'] button {
+body[data-theme='high-contrast'] button,
+body[data-theme='high-contrast'] a.btn {
   border: 2px solid #FFFFFF !important;
+  background: #FFFF00 !important;
   color: #000000 !important;
   font-weight: 800 !important;
 }
 
-body[data-theme='high-contrast'] button.btn-secondary {
+body[data-theme='high-contrast'] button.btn-secondary,
+body[data-theme='high-contrast'] a.btn-secondary,
+body[data-theme='high-contrast'] .category-tab-btn {
   background: #000000 !important;
   color: #FFFFFF !important;
-  border-color: #FFFFFF !important;
+  border: 2px solid #FFFFFF !important;
 }
 
-body[data-theme='high-contrast'] button.btn-danger {
+body[data-theme='high-contrast'] .category-tab-btn.active {
+  background: #00FFFF !important;
+  color: #000000 !important;
+}
+
+body[data-theme='high-contrast'] button.btn-danger,
+body[data-theme='high-contrast'] a.btn-danger,
+body[data-theme='high-contrast'] .dashboard-sos-btn,
+body[data-theme='high-contrast'] .big-sos-btn {
   background: #FF0000 !important;
   color: #FFFFFF !important;
+  border: 2px solid #FFFFFF !important;
 }
 
 body[data-theme='high-contrast'] .chat-bubble.assistant {
   border: 2px solid #00FFFF !important;
   color: #FFFFFF !important;
+  background: #000000 !important;
 }
 
 body[data-theme='high-contrast'] .chat-bubble.user {
   background: #FFFF00 !important;
   color: #000000 !important;
+  border: 2px solid #FFFFFF !important;
 }
 
 body[data-theme='high-contrast'] :focus-visible {
   outline: 4px solid #00FF00 !important;
   outline-offset: 4px !important;
+}
+
+body[data-theme='high-contrast'] .ambient-glow-orb {
+  display: none !important;
+}
+
+/* Dark Theme Specific Glow Adjustments */
+body[data-theme='dark'] .hero-section {
+  background: radial-gradient(circle at 10% 20%, rgba(30, 111, 217, 0.15), transparent 45%),
+              radial-gradient(circle at 90% 30%, rgba(109, 74, 224, 0.15), transparent 50%),
+              radial-gradient(circle at 50% 90%, rgba(18, 168, 157, 0.12), transparent 50%);
+}
+
+body[data-theme='dark'] .ambient-glow-orb {
+  opacity: 0.35;
+}
+
+body[data-theme='dark'] .preview-titlebar {
+  background: #17243E;
+}
+
+body[data-theme='dark'] .preview-address-bar {
+  background: #0B1220;
 }

@@ -1,127 +1,169 @@
-import Fastify from 'fastify';
-import cors from '@fastify/cors';
-import compress from '@fastify/compress';
-import rateLimit from '@fastify/rate-limit';
-import websocket from '@fastify/websocket';
-import fastifyStatic from '@fastify/static';
+import 'dotenv/config';
+import express, { Express, Request, Response, NextFunction } from 'express';
+import { createServer, Server as HttpServer } from 'node:http';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
 
-import { translateRoute } from './routes/translate.js';
-import { assistantRoute } from './routes/assistant.js';
-import { sosRoute } from './routes/sos.js';
-import { phrasesRoute } from './routes/phrases.js';
-import { healthRoute } from './routes/health.js';
-import { liveWebSocketRoute } from './routes/live.js';
+import { healthRouter } from './routes/health.js';
+import { translateRouter } from './routes/translate.js';
+import { assistantRouter } from './routes/assistant.js';
+import { sosRouter } from './routes/sos.js';
+import { phrasesRouter } from './routes/phrases.js';
+import { setupLiveWebSocket } from './routes/live.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const isProd = process.env.NODE_ENV === 'production';
 const PORT = Number(process.env.PORT) || 3001;
 const HOST = process.env.HOST || '0.0.0.0';
 
-export async function buildApp() {
-  const app = Fastify({
-    logger: {
-      level: isProd ? 'info' : 'debug',
-      transport: isProd
-        ? undefined
-        : {
-            target: 'pino/file',
-            options: { destination: 1 }
-          }
-    },
-    bodyLimit: 1048576, // 1MB max body
-    connectionTimeout: 10000,
-    keepAliveTimeout: 5000
+export interface AppInstance {
+  app: Express;
+  server: HttpServer;
+}
+
+export function buildApp(): AppInstance {
+  const app = express();
+  const server = createServer(app);
+
+  // Security Headers via Helmet
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'"],
+          styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+          fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+          imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+          connectSrc: [
+            "'self'",
+            'ws:',
+            'wss:',
+            'https://api.mymemory.translated.net',
+            'https://generativelanguage.googleapis.com',
+            'https://api.twilio.com'
+          ]
+        }
+      },
+      crossOriginEmbedderPolicy: false
+    })
+  );
+
+  // Additional security headers
+  app.use((_req: Request, res: Response, next: NextFunction) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    next();
   });
 
-  // Security Headers Hook
-  app.addHook('onRequest', async (_request, reply) => {
-    reply.header('X-Content-Type-Options', 'nosniff');
-    reply.header('X-Frame-Options', 'DENY');
-    reply.header('X-XSS-Protection', '1; mode=block');
-    reply.header('Referrer-Policy', 'strict-origin-when-cross-origin');
-    reply.header(
-      'Content-Security-Policy',
-      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' ws: wss: https://api.mymemory.translated.net https://generativelanguage.googleapis.com;"
-    );
-  });
+  // CORS
+  app.use(
+    cors({
+      origin: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+    })
+  );
 
-  // Plugins
-  await app.register(cors, {
-    origin: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-  });
+  // Body Parsing
+  app.use(express.json({ limit: '1mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
-  await app.register(compress, {
-    global: true,
-    threshold: 1024,
-    encodings: ['br', 'gzip', 'deflate']
-  });
-
-  await app.register(rateLimit, {
+  // General Rate Limiter
+  const generalLimiter = rateLimit({
+    windowMs: 60 * 1000,
     max: 120,
-    timeWindow: '1 minute',
-    allowList: ['127.0.0.1', '::1']
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many requests, please try again later.' }
+  });
+  app.use('/api/', generalLimiter);
+
+  // Specific Route Rate Limiters
+  const sosLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 15,
+    message: { error: 'Rate limit exceeded for SOS requests. Please wait a minute.' }
   });
 
-  await app.register(websocket, {
-    options: { maxPayload: 1048576 }
+  const translateLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 60,
+    message: { error: 'Rate limit exceeded for translations. Please slow down.' }
   });
 
-  // Register API routes
-  await app.register(translateRoute);
-  await app.register(assistantRoute);
-  await app.register(sosRoute);
-  await app.register(phrasesRoute);
-  await app.register(healthRoute);
-  await app.register(liveWebSocketRoute);
+  const assistantLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 40,
+    message: { error: 'Rate limit exceeded for assistant queries. Please wait a moment.' }
+  });
 
-  // Serve static files in production if dist/client exists
+  // Mount API Routes
+  app.use('/api/v1/health', healthRouter);
+  app.use('/api/v1/sos', sosLimiter, sosRouter);
+  app.use('/api/v1/translate', translateLimiter, translateRouter);
+  app.use('/api/v1/assistant', assistantLimiter, assistantRouter);
+  app.use('/api/v1/phrases', phrasesRouter);
+
+  // Mount WebSocket for /live captions
+  setupLiveWebSocket(server);
+
+  // Static files in production
   const clientDist = resolve(__dirname, '../../dist/client');
   if (existsSync(clientDist)) {
-    await app.register(fastifyStatic, {
-      root: clientDist,
-      prefix: '/',
-      cacheControl: true,
-      maxAge: 31536000000,
-      immutable: true,
-      setHeaders: (res, path) => {
-        if (path.endsWith('.html') || path.endsWith('sw.js') || path.endsWith('manifest.webmanifest')) {
-          res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+    app.use(
+      express.static(clientDist, {
+        setHeaders: (res, path) => {
+          if (path.endsWith('.html') || path.endsWith('sw.js') || path.endsWith('manifest.webmanifest')) {
+            res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+          } else {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+          }
         }
-      }
-    });
+      })
+    );
 
-    app.setNotFoundHandler((_req, reply) => {
-      reply.sendFile('index.html');
+    app.use((_req: Request, res: Response) => {
+      res.sendFile(resolve(clientDist, 'index.html'));
     });
   }
 
-  return app;
+  // Safe Centralized Error Handler
+  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    console.error('Unhandled server error:', err);
+    res.status(err.status || 500).json({
+      error: 'Internal Server Error',
+      message: process.env.NODE_ENV === 'production' ? 'An unexpected error occurred.' : err.message
+    });
+  });
+
+  return { app, server };
 }
 
-async function start() {
-  try {
-    const app = await buildApp();
-    await app.listen({ port: PORT, host: HOST });
-    app.log.info(`🚀 ConnectPlus Backend running on http://${HOST}:${PORT}`);
+export async function start(): Promise<HttpServer> {
+  const { server } = buildApp();
+  return new Promise((resolve) => {
+    server.listen(PORT, HOST, () => {
+      console.log(`🚀 ConnectPlus Backend running on http://${HOST}:${PORT}`);
+      resolve(server);
+    });
 
     const shutdown = async (signal: string) => {
-      app.log.info(`Received ${signal}, shutting down gracefully...`);
-      await app.close();
-      process.exit(0);
+      console.log(`Received ${signal}, shutting down gracefully...`);
+      server.close(() => {
+        process.exit(0);
+      });
     };
 
     process.on('SIGINT', () => shutdown('SIGINT'));
     process.on('SIGTERM', () => shutdown('SIGTERM'));
-  } catch (err) {
-    console.error('Failed to start server:', err);
-    process.exit(1);
-  }
+  });
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

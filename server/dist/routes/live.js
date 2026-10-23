@@ -1,7 +1,8 @@
-import { WebSocket } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
 export const liveRooms = new Map();
-export async function liveWebSocketRoute(app) {
-    app.get('/live', { websocket: true }, (socket, _req) => {
+export function setupLiveWebSocket(server) {
+    const wss = new WebSocketServer({ server, path: '/live' });
+    wss.on('connection', (socket) => {
         const conn = {
             socket,
             isAlive: true
@@ -71,7 +72,7 @@ export async function liveWebSocketRoute(app) {
                     }
                 }
             }
-            catch (err) {
+            catch {
                 socket.send(JSON.stringify({
                     type: 'error',
                     text: 'Invalid message payload'
@@ -93,7 +94,6 @@ export async function liveWebSocketRoute(app) {
             }
         });
     });
-    // Heartbeat interval every 30s to detect broken connections
     const interval = setInterval(() => {
         for (const [roomCode, clients] of liveRooms.entries()) {
             for (const client of Array.from(clients)) {
@@ -111,7 +111,8 @@ export async function liveWebSocketRoute(app) {
             }
         }
     }, 30000);
-    app.addHook('onClose', () => {
+    wss.on('close', () => {
         clearInterval(interval);
     });
+    return wss;
 }
