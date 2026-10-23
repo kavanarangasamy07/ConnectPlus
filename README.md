@@ -193,4 +193,5 @@ npm test
 - **No Plain-Text Phone Numbers**: All emergency contact numbers and names stored in client storage are obfuscated/encrypted.
 - **Secure SMS Dispatch**: Backend SMS gateway API keys remain strictly on the server (`.env`) and are never exposed to the frontend.
 - **Safe Fallbacks**: If no SMS gateway is configured, no fake success is shown; a native `sms:` deep link is prefilled for direct dispatch.#   C o n n e c t P l u s 2 0  
+ #   C o n n e c t P l u s 2 0  
  
